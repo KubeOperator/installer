@@ -1,2 +1,1 @@
-# installer
-kubeoperator installer
+# kubeoperator-installer
