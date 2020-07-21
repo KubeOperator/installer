@@ -15,7 +15,7 @@ services:
       retries: 10
 
   ui:
-    image: kubeoperator/ui:master
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/ui:master
     container_name: kubeoperator_ui
     restart: always
     healthcheck:
@@ -25,7 +25,7 @@ services:
       retries: 10
 
   server:
-    image: kubeoperator/server:master
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/server:master
     container_name: kubeoperator_server
     volumes:
       - ./conf/app.yaml:/etc/ko/app.yaml
@@ -55,7 +55,7 @@ services:
       - ./data/mysql:/var/lib/mysql
 
   kobe:
-    image: kubeoperator/kobe:master
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kobe:master
     volumes:
       - ./data/kobe:/var/kobe/data
     container_name: kubeopreator_kobe
@@ -65,7 +65,7 @@ services:
       timeout: 3s
       retries: 10
   kotf:
-    image: kubeoperator/kotf:master
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kotf:master
     container_name: kubeopreator_kotf
     volumes:
       - ./data/kotf:/var/kotf/data
@@ -93,7 +93,7 @@ services:
         condition: service_healthy
 
   webkubectl:
-    image: kubeoperator/webkubectl:v2.5.0
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/webkubectl:v2.5.0
     container_name: kubeoperator_webkubectl
     restart: always
     privileged: true
