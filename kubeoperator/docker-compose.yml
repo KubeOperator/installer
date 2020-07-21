@@ -42,8 +42,6 @@ services:
   mysql:
     image: mysql:5
     container_name: kubeoperator_mysql
-    ports:
-    - 3306:3306
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       interval: 5s
@@ -54,6 +52,7 @@ services:
     volumes:
       - ./conf/my.cnf:/etc/mysql/conf.d/my.cnf
       - ./conf/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./data/mysql:/var/lib/mysql
 
   kobe:
     image: kubeoperator/kobe:master
