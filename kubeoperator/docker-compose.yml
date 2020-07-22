@@ -83,7 +83,6 @@ services:
       - ./conf/grafana.env
     volumes:
       - ./conf/grafana.ini:/etc/grafana/grafana.ini
-      - ./data/grafana:/var/lib/grafana
     healthcheck:
       test: ["CMD","ps", "-ef", "|", "grep", "grafana-server"]
       interval: 5s
