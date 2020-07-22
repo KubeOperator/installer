@@ -93,7 +93,7 @@ services:
         condition: service_healthy
 
   webkubectl:
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/webkubectl:v2.5.0
+    image: kubeoperator/webkubectl:v2.5.0
     container_name: kubeoperator_webkubectl
     restart: always
     privileged: true
