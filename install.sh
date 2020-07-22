@@ -22,7 +22,6 @@ fi
 echo "开始启动 KubeOperator"
 cd /opt/installer/kubeoperator/ && docker-compose up -d
 if [ $? = 0 ];then
-echo -e "======================= KubeOperator 安装完成 =======================\n" 2>&1
-echo -e "======================= 默认用户名： admin     =======================\n" 2>&1
-echo -e "======================= 默认密码： kubeoperator@admin123 =============\n" 2>&1
+echo -e "======================= KubeOperator 安装完成 =======================\n"
+echo -e "请通过以下方式访问:\n URL: http://LOCAL_IP\n 用户名: admin\n 初始密码: kubeoperator@admin123"
 fi

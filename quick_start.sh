@@ -20,7 +20,8 @@ wget --no-check-certificate $kubeoperator_download_url -c /root 2&> /dev/null
 tar zxvf /root/kubeoperator_installer.tgz -C /opt/
 if [ $? = 0 ];then
   tar zxvf /root/nexus-data.origin.tar.gz -C /opt/installer/kubeoperator/data/ 2&> /dev/null
-  tar zxvf /root/ansible.tar.gz -C installer/kubeoperator/data/kobe/project/ko/ 2&> /dev/null
+  tar zxvf /root/ansible.tar.gz -C /opt/installer/kubeoperator/data/kobe/project/ 2&> /dev/null
+  mv /opt/installer/kubeoperator/data/kobe/project/ansible /opt/installer/kubeoperator/data/kobe/project/ko
 fi
 
 cd /opt/installer/
