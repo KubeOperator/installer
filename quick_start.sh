@@ -12,15 +12,15 @@ if which wget;then
   yum install wget -y
 fi
 
-wget --no-check-certificate $nexus_download_url -c /root 2&> /dev/null
-wget --no-check-certificate $ansible_download_url -c /root 2&> /dev/null
-wget --no-check-certificate $kubeoperator_download_url -c /root 2&> /dev/null
+wget --no-check-certificate $nexus_download_url  2&> /dev/null
+wget --no-check-certificate $ansible_download_url  2&> /dev/null
+wget --no-check-certificate $kubeoperator_download_url  2&> /dev/null
 
 # 解压离线文件
-tar zxvf /root/kubeoperator_installer.tar.gz -C /opt/
+tar zxvf kubeoperator_installer.tar.gz -C /opt/
 if [ $? = 0 ];then
-  tar zxvf /root/nexus-data.origin.tar.gz -C /opt/installer/kubeoperator/data/
-  tar zxvf /root/ansible.tar.gz -C /opt/installer/kubeoperator/data/kobe/project/
+  tar zxvf nexus-data.origin.tar.gz -C /opt/installer/kubeoperator/data/
+  tar zxvf ansible.tar.gz -C /opt/installer/kubeoperator/data/kobe/project/
   mv /opt/installer/kubeoperator/data/kobe/project/ansible /opt/installer/kubeoperator/data/kobe/project/ko
 fi
 
