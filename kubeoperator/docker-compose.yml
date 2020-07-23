@@ -77,7 +77,7 @@ services:
       - ./data/mysql:/var/lib/mysql
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:7.1.0
     container_name: kubeoperator_grafana
     env_file:
       - ./conf/grafana.env
@@ -102,3 +102,13 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+
+  nexus:
+    restart: always
+    image: docker.io/sonatype/nexus3:3.25.0
+    container_name: kubeoperator_nexus
+    ports:
+      - 8081:8081
+      - 8082:8082
+    volumes:
+      - ./data/nexus-data/:/nexus-data
