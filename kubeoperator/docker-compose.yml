@@ -30,7 +30,7 @@ services:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kobe:master
     volumes:
       - ./data/kobe:/var/kobe/data
-    container_name: kubeopreator_kobe
+    container_name: kubeoperator_kobe
     healthcheck:
       test: ["CMD","kobe-inventory"]
       interval: 5s
@@ -38,7 +38,7 @@ services:
       retries: 10
   kotf:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kotf:master
-    container_name: kubeopreator_kotf
+    container_name: kubeoperator_kotf
     volumes:
       - ./data/kotf:/var/kotf/data
     healthcheck:
