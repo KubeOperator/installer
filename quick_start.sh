@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #Install Latest Stable KubeOperator Release
 
 #  定义离线文件下载地址

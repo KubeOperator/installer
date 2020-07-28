@@ -1,9 +1,10 @@
+#!/usr/bin/env bash
 #Install Latest Stable KubeOperator Release
 #BASE_DIR=$(cd "$(dirname "$0")";pwd)
 #PROJECT_DIR=$(dirname ${BASE_DIR})
 #CURRENT_DIR=$(cd "$(dirname "$0")";pwd)
 
-if read -t 60 -p "设置KubeOperator安装目录,默认 /opt :" KO_BASE;then
+if read -t 120 -p "设置KubeOperator安装目录,默认/opt : " KO_BASE;then
   echo "你选择的安装路径为 $KO_BASE"
 else
   echo "(设置超时，使用默认安装路径 /opt)"
@@ -16,11 +17,11 @@ function log() {
 
 # 解压离线文件
 if [ $CURRENT_DIR ] && [ -d $CURRENT_DIR/installer ];then
-  echoo "在线安装"
-  tar zxvf $CURRENT_DIR/ansible.tar.gz -C $CURRENT_DIR
-  cp -rp $CURRENT_DIR/installer/kubeoperator $KO_BASE/
-  tar zxvf $CURRENT_DIR/nexus-data.origin.tar.gz -C $KO_BASE/kubeoperator/data/
-  cp -rp $CURRENT_DIR/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
+  log "在线安装"
+  tar zxvf $CURRENT_DIR/ansible.tar.gz -C $CURRENT_DIR 2&> /dev/null
+  cp -rp $CURRENT_DIR/installer/kubeoperator $KO_BASE/  2&> /dev/null
+  tar zxvf $CURRENT_DIR/nexus-data.origin.tar.gz -C $KO_BASE/kubeoperator/data/ 2&> /dev/null
+  cp -rp $CURRENT_DIR/ansible $KO_BASE/kubeoperator/data/kobe/project/ko 2&> /dev/null
 # 离线安装
 fi
 
