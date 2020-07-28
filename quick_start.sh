@@ -21,7 +21,7 @@ else
   if [ $? = 0 ];then
     echo "wget 安装成功"
   else
-    echo "wget 安装失败，请手动安装"
+    echo "wget 安装失败，请手动安装后再次执行脚本"
 fi
 
 # 下载离线包

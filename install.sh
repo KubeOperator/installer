@@ -58,7 +58,7 @@ fi
 
 #  2.启动 kubeoperator
 echo "开始启动 KubeOperator"
-cd  $KO_BASEkubeoperator/ && docker-compose up -d
+cd  $KO_BASE/kubeoperator/ && docker-compose up -d
 if [ $? = 0 ];then
 echo -e "======================= KubeOperator 安装完成 =======================\n"
 echo -e "请通过以下方式访问:\n URL: \033[33m http://LOCAL_IP \033[0m \n 用户名: \033[32m admin \033[0m \n 初始密码: \033[32m kubeoperator@admin123 \033[0m"
