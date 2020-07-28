@@ -21,7 +21,7 @@ function log() {
 }
 
 # 解压离线文件
-if [ "$CURRENT_DIR" != "" ] && [ -d $CURRENT_DIR/installer ];then
+if [ -d $CURRENT_DIR/installer ];then
   log "在线安装"
   tar zxvf $CURRENT_DIR/ansible.tar.gz -C $CURRENT_DIR 2&> /dev/null
   cp -rp $CURRENT_DIR/installer/kubeoperator $KO_BASE 2&> /dev/null
@@ -29,6 +29,17 @@ if [ "$CURRENT_DIR" != "" ] && [ -d $CURRENT_DIR/installer ];then
   cp -rp $CURRENT_DIR/ansible $KO_BASE/kubeoperator/data/kobe/project/ko 2&> /dev/null
 # 离线安装
 fi
+
+if [ -d $CURRENT_DIR/installer ];then
+  log "解压 ansible "
+  tar zxvf $CURRENT_DIR/ansible.tar.gz -C $CURRENT_DIR > /dev/null 2>&1
+  cp -rp $CURRENT_DIR/installer/kubeoperator $KO_BASE
+  log "解压 nexus "
+  tar zxvf $CURRENT_DIR/nexus-data.origin.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
+  cp -rp $CURRENT_DIR/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
+# 离线安装
+fi
+
 
 # 1.检测 docker 是否存在
 if which docker docker-compose ;then
@@ -78,5 +89,5 @@ log "开始启动 KubeOperator"
 cd  $KO_BASE/kubeoperator/ && docker-compose up -d 2>&1 | tee -a ${CURRENT_DIR}/install.log
 if [ $? = 0 ];then
 echo -e "======================= KubeOperator 安装完成 =======================\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
-echo -e "请通过以下方式访问:\n URL: \033[33m http://LOCAL_IP \033[0m \n 用户名: \033[32m admin \033[0m \n 初始密码: \033[32m kubeoperator@admin123 \033[0m" 2>&1 | tee -a ${CURRENT_DIR}/install.log
+echo -e "请通过以下方式访问:\n URL: \033[33m http://$(hostname -I|cut -d" " -f 1)\033[0m \n 用户名: \033[32m admin \033[0m \n 初始密码: \033[32m kubeoperator@admin123 \033[0m" 2>&1 | tee -a ${CURRENT_DIR}/install.log
 fi
