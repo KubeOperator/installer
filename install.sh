@@ -15,9 +15,8 @@ function log() {
 }
 
 # 解压离线文件
-if [ -f $CURRENT_DIR/kubeoperator_installer.tar.gz ];then
+if [ -d $CURRENT_DIR/installer ];then
 # 执行在线安装
-  tar zxvf $CURRENT_DIR/kubeoperator_installer.tar.gz -C $CURRENT_DIR
   tar zxvf $CURRENT_DIR/ansible.tar.gz -C $CURRENT_DIR
   cp -rp $CURRENT_DIR/installer/kubeoperator $KO_BASE/
   if [ $? = 0 ];then

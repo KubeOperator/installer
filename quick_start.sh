@@ -29,5 +29,9 @@ wget --no-check-certificate $nexus_download_url
 wget --no-check-certificate $ansible_download_url
 wget --no-check-certificate $kubeoperator_download_url
 
+if [ -f $CURRENT_DIR/kubeoperator_installer.tar.gz ];then
+# 执行在线安装
+  tar zxvf $CURRENT_DIR/kubeoperator_installer.tar.gz -C $CURRENT_DIR
+fi
 cd /opt/installer/
 /bin/bash install.sh
