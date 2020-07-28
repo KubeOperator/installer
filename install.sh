@@ -93,9 +93,9 @@ else
 fi
 
 # 2.加载镜像
-if [[ -d $CURRENT_DIR/installer/images ]]; then
+if [[ -d $CURRENT_DIR/images ]]; then
    log "加载镜像"
-   cd  $CURRENT_DIR/installer
+   cd  $CURRENT_DIR
    for i in $(ls images); do
       docker load -i images/$i 2>&1 | tee -a ${CURRENT_DIR}/install.log
    done
