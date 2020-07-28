@@ -1,12 +1,12 @@
 #Install Latest Stable KubeOperator Release
-BASE_DIR=$(cd "$(dirname "$0")";pwd)
-PROJECT_DIR=$(dirname ${BASE_DIR})
-CURRENT_DIR=$(cd "$(dirname "$0")";pwd)
+#BASE_DIR=$(cd "$(dirname "$0")";pwd)
+#PROJECT_DIR=$(dirname ${BASE_DIR})
+#CURRENT_DIR=$(cd "$(dirname "$0")";pwd)
 
-if read -t 60 -p "设置KubeOperator安装目录,默认： /opt:" KO_BASE;then
+if read -t 60 -p "设置KubeOperator安装目录,默认 /opt :" KO_BASE;then
   echo "你选择的安装路径为 $KO_BASE"
 else
-  echo "设置超时，使用默认安装路径 /opt"
+  echo "(设置超时，使用默认安装路径 /opt)"
 fi
 
 function log() {
