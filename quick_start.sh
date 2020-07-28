@@ -15,7 +15,7 @@ kubeoperator_download_url="http://172.16.10.63/ko-3.0/data/install-dev/kubeopera
 
 # 判断 wget 命令是否安装
 if which wget;then
-  echo "wget 已经安装"
+  echo "开始下载离线包"
 else
   echo "wget 未安装，即将安装 wget"
   yum install wget -y
@@ -33,7 +33,7 @@ wget --no-check-certificate $kubeoperator_download_url
 
 if [ -f $CURRENT_DIR/kubeoperator_installer.tar.gz ];then
 # 执行在线安装
-  tar zxvf $CURRENT_DIR/kubeoperator_installer.tar.gz -C $CURRENT_DIR
+  tar zxvf $CURRENT_DIR/kubeoperator_installer.tar.gz -C $CURRENT_DIR > /dev/null 2>&1
 fi
 cd $CURRENT_DIR/installer/
 /bin/bash install.sh

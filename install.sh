@@ -76,7 +76,8 @@ else
       chmod +x /usr/bin/docker*
       chmod 754 /etc/systemd/system/docker.service
       log "... 启动 docker"
-      service docker start 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      systemctl start docker 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      systemctl enable docker 2>&1 | tee -a ${CURRENT_DIR}/install.log
    else
       log "... 在线安装 docker"
       curl -fsSL https://get.docker.com -o get-docker.sh 2>&1 | tee -a ${CURRENT_DIR}/install.log
@@ -86,10 +87,9 @@ else
       sudo chmod +x /usr/local/bin/docker-compose
       log "... 启动 docker"
       service docker start 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      systemctl enable docker 2>&1 | tee -a ${CURRENT_DIR}/install.log
    fi
 fi
-#https://download.docker.com/linux/static/stable/x86_64/docker-19.03.9.tgz
-
 
 # 2.加载镜像
 if [[ -d $CURRENT_DIR/installer/images ]]; then
