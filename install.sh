@@ -15,15 +15,13 @@ function log() {
 }
 
 # 解压离线文件
-if [ -d $CURRENT_DIR/installer ];then
-# 执行在线安装
+if [ $CURRENT_DIR ] && [ -d $CURRENT_DIR/installer ];then
+  echoo "在线安装"
   tar zxvf $CURRENT_DIR/ansible.tar.gz -C $CURRENT_DIR
   cp -rp $CURRENT_DIR/installer/kubeoperator $KO_BASE/
-  if [ $? = 0 ];then
-    tar zxvf $CURRENT_DIR/nexus-data.origin.tar.gz -C $KO_BASE/kubeoperator/data/
-    cp -rp $CURRENT_DIR/installer/kubeoperator/data/kobe/project/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
-  fi
-# 执行离线安装
+  tar zxvf $CURRENT_DIR/nexus-data.origin.tar.gz -C $KO_BASE/kubeoperator/data/
+  cp -rp $CURRENT_DIR/installer/kubeoperator/data/kobe/project/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
+# 离线安装
 fi
 
 # 1.检测 docker 是否存在
@@ -55,7 +53,23 @@ else
    fi
 fi
 
-#  2.启动 kubeoperator
+
+
+cd  $CURRENT_DIR/installer
+# 2.加载镜像
+if [[ -d images ]]; then
+   log "加载镜像"
+   for i in $(ls images); do
+      docker load -i images/$i 2>&1 | tee -a ${CURRENT_DIR}/install.log
+   done
+else
+   log "拉取镜像"
+   cd $KO_BASE/kubeoperator/ && docker-compose $(cat compose_files) pull 2>&1 | tee -a ${CURRENT_DIR}/install.log
+   docker pull ${MS_PREFIX}/jmeter-master:0.0.6 2>&1 | tee -a ${CURRENT_DIR}/install.log
+   cd -
+fi
+
+#  3.启动 kubeoperator
 echo "开始启动 KubeOperator"
 cd  $KO_BASE/kubeoperator/ && docker-compose up -d
 if [ $? = 0 ];then
