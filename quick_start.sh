@@ -33,6 +33,7 @@ wget --no-check-certificate $kubeoperator_download_url
 
 if [ -f $CURRENT_DIR/kubeoperator_installer.tar.gz ];then
 # 执行在线安装
+  echo "开始解压离线包..."
   tar zxvf $CURRENT_DIR/kubeoperator_installer.tar.gz -C $CURRENT_DIR > /dev/null 2>&1
 fi
 cd $CURRENT_DIR/installer/
