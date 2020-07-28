@@ -20,7 +20,7 @@ if [ $CURRENT_DIR ] && [ -d $CURRENT_DIR/installer ];then
   tar zxvf $CURRENT_DIR/ansible.tar.gz -C $CURRENT_DIR
   cp -rp $CURRENT_DIR/installer/kubeoperator $KO_BASE/
   tar zxvf $CURRENT_DIR/nexus-data.origin.tar.gz -C $KO_BASE/kubeoperator/data/
-  cp -rp $CURRENT_DIR/installer/kubeoperator/data/kobe/project/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
+  cp -rp $CURRENT_DIR/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
 # 离线安装
 fi
 
