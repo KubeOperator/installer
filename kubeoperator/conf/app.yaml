@@ -12,12 +12,6 @@ db:
 jwt:
   secret: iXDgDaEYBzIzustW
   exp: 480
-helm:
-  repo:
-    name: nexus
-    url: http://nexus:8081/repository/helm
-    username: admin
-    password: admin123
 kobe:
   host: kobe
   port: 8080
@@ -29,3 +23,6 @@ grafana:
   port: 3000
   username: admin
   password: admin
+webkubectl:
+  host: webkubectl
+  port: 8080
