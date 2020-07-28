@@ -5,9 +5,12 @@
 #CURRENT_DIR=$(cd "$(dirname "$0")";pwd)
 
 if read -t 120 -p "设置KubeOperator安装目录,默认/opt : " KO_BASE;then
+  if [ "$KO_BASE" != "" ];then
   echo "你选择的安装路径为 $KO_BASE"
+  fi
 else
   echo "(设置超时，使用默认安装路径 /opt)"
+  KO_BASE=/opt
 fi
 
 function log() {
@@ -16,10 +19,10 @@ function log() {
 }
 
 # 解压离线文件
-if [ $CURRENT_DIR ] && [ -d $CURRENT_DIR/installer ];then
+if [ "$CURRENT_DIR" != "" ] && [ -d $CURRENT_DIR/installer ];then
   log "在线安装"
   tar zxvf $CURRENT_DIR/ansible.tar.gz -C $CURRENT_DIR 2&> /dev/null
-  cp -rp $CURRENT_DIR/installer/kubeoperator $KO_BASE/  2&> /dev/null
+  cp -rp $CURRENT_DIR/installer/kubeoperator $KO_BASE 2&> /dev/null
   tar zxvf $CURRENT_DIR/nexus-data.origin.tar.gz -C $KO_BASE/kubeoperator/data/ 2&> /dev/null
   cp -rp $CURRENT_DIR/ansible $KO_BASE/kubeoperator/data/kobe/project/ko 2&> /dev/null
 # 离线安装
@@ -65,7 +68,6 @@ if [[ -d images ]]; then
 else
    log "拉取镜像"
    cd $KO_BASE/kubeoperator/ && docker-compose pull 2>&1 | tee -a ${CURRENT_DIR}/install.log
-   docker pull ${MS_PREFIX}/jmeter-master:0.0.6 2>&1 | tee -a ${CURRENT_DIR}/install.log
    cd -
 fi
 
