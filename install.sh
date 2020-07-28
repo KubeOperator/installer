@@ -52,8 +52,7 @@ else
       service docker start 2>&1 | tee -a ${CURRENT_DIR}/install.log
    fi
 fi
-
-
+#https://download.docker.com/linux/static/stable/x86_64/docker-19.03.9.tgz
 
 cd  $CURRENT_DIR/installer
 # 2.加载镜像
@@ -64,15 +63,15 @@ if [[ -d images ]]; then
    done
 else
    log "拉取镜像"
-   cd $KO_BASE/kubeoperator/ && docker-compose $(cat compose_files) pull 2>&1 | tee -a ${CURRENT_DIR}/install.log
+   cd $KO_BASE/kubeoperator/ && docker-compose pull 2>&1 | tee -a ${CURRENT_DIR}/install.log
    docker pull ${MS_PREFIX}/jmeter-master:0.0.6 2>&1 | tee -a ${CURRENT_DIR}/install.log
    cd -
 fi
 
 #  3.启动 kubeoperator
-echo "开始启动 KubeOperator"
-cd  $KO_BASE/kubeoperator/ && docker-compose up -d
+log "开始启动 KubeOperator"
+cd  $KO_BASE/kubeoperator/ && docker-compose up -d 2>&1 | tee -a ${CURRENT_DIR}/install.log
 if [ $? = 0 ];then
-echo -e "======================= KubeOperator 安装完成 =======================\n"
-echo -e "请通过以下方式访问:\n URL: \033[33m http://LOCAL_IP \033[0m \n 用户名: \033[32m admin \033[0m \n 初始密码: \033[32m kubeoperator@admin123 \033[0m"
+echo -e "======================= KubeOperator 安装完成 =======================\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
+echo -e "请通过以下方式访问:\n URL: \033[33m http://LOCAL_IP \033[0m \n 用户名: \033[32m admin \033[0m \n 初始密码: \033[32m kubeoperator@admin123 \033[0m" 2>&1 | tee -a ${CURRENT_DIR}/install.log
 fi
