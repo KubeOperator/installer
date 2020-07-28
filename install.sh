@@ -1,8 +1,36 @@
 #!/usr/bin/env bash
 #Install Latest Stable KubeOperator Release
-#BASE_DIR=$(cd "$(dirname "$0")";pwd)
-#PROJECT_DIR=$(dirname ${BASE_DIR})
-#CURRENT_DIR=$(cd "$(dirname "$0")";pwd)
+
+red=31
+green=32
+yellow=33
+blue=34
+
+function colorMsg()
+{
+  echo -e "\033[$1m $2 \033[0m"
+}
+
+function log() {
+   message="[KubeOperator Log]: $1 "
+   echo -e "${message}" 2>&1 | tee -a ${CURRENT_DIR}/install.log
+}
+
+echo
+cat << EOF
+██╗  ██╗██╗   ██╗██████╗ ███████╗ ██████╗ ██████╗ ███████╗██████╗  █████╗ ████████╗ ██████╗ ██████╗
+██║ ██╔╝██║   ██║██╔══██╗██╔════╝██╔═══██╗██╔══██╗██╔════╝██╔══██╗██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗
+█████╔╝ ██║   ██║██████╔╝█████╗  ██║   ██║██████╔╝█████╗  ██████╔╝███████║   ██║   ██║   ██║██████╔╝
+██╔═██╗ ██║   ██║██╔══██╗██╔══╝  ██║   ██║██╔═══╝ ██╔══╝  ██╔══██╗██╔══██║   ██║   ██║   ██║██╔══██╗
+██║  ██╗╚██████╔╝██████╔╝███████╗╚██████╔╝██║     ███████╗██║  ██║██║  ██║   ██║   ╚██████╔╝██║  ██║
+╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝ ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
+EOF
+
+colorMsg $yellow "\n\n开始安装 KubeOperator，版本 - 3.0"
+
+if [ ! $CURRENT_DIR ];then
+  CURRENT_DIR=$(cd "$(dirname "$0")";pwd)
+fi
 
 if read -t 120 -p "设置KubeOperator安装目录,默认/opt : " KO_BASE;then
   if [ "$KO_BASE" != "" ];then
@@ -15,29 +43,20 @@ else
   KO_BASE=/opt
 fi
 
-function log() {
-   message="[KubeOperator Log]: $1 "
-   echo -e "${message}" 2>&1 | tee -a ${CURRENT_DIR}/install.log
-}
-
 # 解压离线文件
-if [ -d $CURRENT_DIR/installer ];then
-  log "在线安装"
-  tar zxvf $CURRENT_DIR/ansible.tar.gz -C $CURRENT_DIR 2&> /dev/null
-  cp -rp $CURRENT_DIR/installer/kubeoperator $KO_BASE 2&> /dev/null
-  tar zxvf $CURRENT_DIR/nexus-data.origin.tar.gz -C $KO_BASE/kubeoperator/data/ 2&> /dev/null
-  cp -rp $CURRENT_DIR/ansible $KO_BASE/kubeoperator/data/kobe/project/ko 2&> /dev/null
-# 离线安装
-fi
 
-if [ -d $CURRENT_DIR/installer ];then
-  log "解压 ansible "
-  tar zxvf $CURRENT_DIR/ansible.tar.gz -C $CURRENT_DIR > /dev/null 2>&1
-  cp -rp $CURRENT_DIR/installer/kubeoperator $KO_BASE
-  log "解压 nexus "
-  tar zxvf $CURRENT_DIR/nexus-data.origin.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
-  cp -rp $CURRENT_DIR/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
+if [ -d $CURRENT_DIR/docker ];then
 # 离线安装
+    tar zxvf $CURRENT_DIR/ansible.tar.gz -C $CURRENT_DIR > /dev/null 2>&1
+    tar zxvf $CURRENT_DIR/nexus-data.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
+  else
+    cp -rp $CURRENT_DIR/installer/kubeoperator $KO_BASE
+# 在线安装
+    log "解压 ansible "
+    tar zxvf $CURRENT_DIR/ansible.tar.gz -C $CURRENT_DIR > /dev/null 2>&1
+    cp -rp $CURRENT_DIR/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
+    log "解压 nexus "
+    tar zxvf $CURRENT_DIR/nexus-data.origin.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
 fi
 
 
@@ -71,10 +90,11 @@ else
 fi
 #https://download.docker.com/linux/static/stable/x86_64/docker-19.03.9.tgz
 
-cd  $CURRENT_DIR/installer
+
 # 2.加载镜像
-if [[ -d images ]]; then
+if [[ -d $CURRENT_DIR/installer/images ]]; then
    log "加载镜像"
+   cd  $CURRENT_DIR/installer
    for i in $(ls images); do
       docker load -i images/$i 2>&1 | tee -a ${CURRENT_DIR}/install.log
    done
@@ -89,5 +109,5 @@ log "开始启动 KubeOperator"
 cd  $KO_BASE/kubeoperator/ && docker-compose up -d 2>&1 | tee -a ${CURRENT_DIR}/install.log
 if [ $? = 0 ];then
 echo -e "======================= KubeOperator 安装完成 =======================\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
-echo -e "请通过以下方式访问:\n URL: \033[33m http://$(hostname -I|cut -d" " -f 1)\033[0m \n 用户名: \033[32m admin \033[0m \n 初始密码: \033[32m kubeoperator@admin123 \033[0m" 2>&1 | tee -a ${CURRENT_DIR}/install.log
+echo -e "请通过以下方式访问:\n URL: \033[33m http://$(hostname -I|cut -d" " -f 1)\033[0m \n 用户名: \033[${green}m admin \033[0m \n 初始密码: \033[${green}m kubeoperator@admin123 \033[0m" 2>&1 | tee -a ${CURRENT_DIR}/install.log
 fi
