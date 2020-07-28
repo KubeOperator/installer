@@ -22,6 +22,7 @@ else
     echo "wget 安装成功"
   else
     echo "wget 安装失败，请手动安装后再次执行脚本"
+  fi
 fi
 
 # 下载离线包
@@ -33,5 +34,5 @@ if [ -f $CURRENT_DIR/kubeoperator_installer.tar.gz ];then
 # 执行在线安装
   tar zxvf $CURRENT_DIR/kubeoperator_installer.tar.gz -C $CURRENT_DIR
 fi
-cd /opt/installer/
+cd $CURRENT_DIR/installer/
 /bin/bash install.sh
