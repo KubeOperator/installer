@@ -48,6 +48,7 @@ fi
 if [ -d $CURRENT_DIR/docker ];then
 # 离线安装
     tar zxvf $CURRENT_DIR/ansible.tar.gz -C $CURRENT_DIR > /dev/null 2>&1
+    cp -rp $CURRENT_DIR/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
     tar zxvf $CURRENT_DIR/nexus-data.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
   else
     cp -rp $CURRENT_DIR/installer/kubeoperator $KO_BASE
