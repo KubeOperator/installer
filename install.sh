@@ -26,7 +26,7 @@ cat << EOF
 ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝ ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
 EOF
 
-colorMsg $yellow "\n\n开始安装 KubeOperator，版本 - 3.0"
+colorMsg $yellow "\n\n开始安装 KubeOperator，版本 - ${KO_VERSION}"
 
 if [ ! $CURRENT_DIR ];then
   CURRENT_DIR=$(cd "$(dirname "$0")";pwd)
@@ -43,8 +43,8 @@ else
   KO_BASE=/opt
 fi
 
-# 解压离线文件
 
+# 解压离线文件
 if [ -d $CURRENT_DIR/docker ];then
 # 离线安装
     tar zxvf $CURRENT_DIR/ansible.tar.gz -C $CURRENT_DIR > /dev/null 2>&1
@@ -59,7 +59,7 @@ if [ -d $CURRENT_DIR/docker ];then
     log "解压 nexus "
     tar zxvf $CURRENT_DIR/nexus-data.origin.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
 fi
-
+sed -i "s/^KO_BASE=\/opt.*/KO_BASE=\/$KO_BASE/g "  $KO_BASE/kubeoperator/koctl
 
 # 1.检测 docker 是否存在
 if which docker docker-compose ;then
@@ -93,6 +93,7 @@ else
 fi
 
 # 2.加载镜像
+export COMPOSE_HTTP_TIMEOUT=180
 if [[ -d $CURRENT_DIR/images ]]; then
    log "加载镜像"
    cd  $CURRENT_DIR

@@ -3,7 +3,7 @@
 
 #  定义离线文件下载地址
 export CURRENT_DIR=$(cd "$(dirname "$0")";pwd)
-export KOVERSION=$(curl -s https://github.com/metersphere/metersphere/releases/latest/download 2>&1 |grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
+export KO_VERSION=$(curl -s https://github.com/kubeoperator/kubeoperator/releases/latest/download 2>&1 |grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
 export ANSIBLE_VERSION=$(curl -s https://github.com/KubeOperator/ansible/releases/latest/download 2>&1 |grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
 
 nexus_download_url="http://172.16.10.63/ko-3.0/data/nexus/nexus-data.origin.tar.gz"
