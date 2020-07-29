@@ -20,6 +20,7 @@ function usage() {
    echo "  restart   重启 kubeoperator 服务"
    echo "  reload    重新加载 kubeoperator 服务"
    echo "  uninstall 卸载 kubeoperator 服务"
+   echo "  pull      在线拉取 kubeoperator 最新镜像"
    echo "  version   查看 kubeoperator 版本信息"
 }
 
@@ -46,6 +47,10 @@ function reload() {
 function uninstall() {
    echo
    cd ${KO_BASE}/kubeoperator; docker-compose  down ${target}
+}
+function pull() {
+   echo
+   cd ${KO_BASE}/kubeoperator; docker-compose  pull ${target}
 }
 function version() {
    echo
@@ -74,6 +79,9 @@ function main() {
          ;;
       version)
          version
+         ;;
+      pull)
+         pull
          ;;
       help)
          usage
