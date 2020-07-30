@@ -21,6 +21,9 @@ function usage() {
    echo "  reload    重新加载 kubeoperator 服务"
    echo "  uninstall 卸载 kubeoperator 服务"
    echo "  pull      在线拉取 kubeoperator 最新镜像"
+   echo "  up        启动 kubeoperator 版本信息"
+   echo "  logs      查看 kubeoperator 日志信息"
+   echo "  down      删除 kubeoperator 容器（不影响持久化数据）"
    echo "  version   查看 kubeoperator 版本信息"
 }
 
@@ -42,11 +45,19 @@ function restart() {
 }
 function reload() {
    echo
-   cd ${KO_BASE}/kubeoperator; docker-compose  up -d
+   cd ${KO_BASE}/kubeoperator; docker-compose  up -d ${target}
+}
+function up() {
+   echo
+   cd ${KO_BASE}/kubeoperator; docker-compose  up -d ${target}
 }
 function down() {
    echo
    cd ${KO_BASE}/kubeoperator; docker-compose  down ${target}
+}
+function logs() {
+   echo
+   cd ${KO_BASE}/kubeoperator; docker-compose  logs ${target}
 }
 function pull() {
    echo
@@ -120,11 +131,17 @@ function main() {
       down)
          down
          ;;
+      up)
+         up
+         ;;
       version)
          version
          ;;
       pull)
          pull
+         ;;
+      logs)
+         logs
          ;;
       help)
          usage
