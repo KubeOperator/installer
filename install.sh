@@ -55,7 +55,7 @@ if [ -d $CURRENT_DIR/docker ];then
 else
 # 在线安装
     cp -rp $CURRENT_DIR/installer/kubeoperator $KO_BASE
-    cp -rp $CURRENT_DIR/installer/koctl $KO_BASE
+    cp -rp $CURRENT_DIR/installer/koctl $KO_BASE/kubeoperator
     log "解压 ansible "
     tar zxvf $CURRENT_DIR/ansible.tar.gz -C $CURRENT_DIR > /dev/null 2>&1
     cp -rp $CURRENT_DIR/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
