@@ -36,6 +36,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+
   kotf:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kotf:master
     container_name: kubeoperator_kotf
@@ -85,8 +86,8 @@ services:
       - ./conf/grafana.ini:/etc/grafana/grafana.ini
     healthcheck:
       test: ["CMD","ps", "-ef", "|", "grep", "grafana-server"]
-      interval: 5s
-      timeout: 3s
+      interval: 10s
+      timeout: 5s
       retries: 10
     depends_on:
       mysql:
