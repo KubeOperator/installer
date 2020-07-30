@@ -63,7 +63,7 @@ services:
       retries: 10
 
   mysql:
-    image: mysql:5
+    image: mysql/mysql-server:8.0.21-amd64
     container_name: kubeoperator_mysql
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
