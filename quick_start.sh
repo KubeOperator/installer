@@ -8,7 +8,7 @@ export ANSIBLE_VERSION=$(curl -s https://github.com/KubeOperator/ansible/release
 
 nexus_download_url="http://172.16.10.63/ko-3.0/data/nexus/nexus-data.origin.tar.gz"
 ansible_download_url="http://172.16.10.63/ko-3.0/data/ansible/ansible.tar.gz"
-kubeoperator_download_url="http://172.16.10.63/ko-3.0/data/install-dev/kubeoperator_installer.tar.gz"
+kubeoperator_download_url="http://172.16.10.63/ko-3.0/data/install/kubeoperator_installer.tar.gz"
 #ansible_download_url="https://github.com/KubeOperator/ansible/releases/latest/download/"
 #kubeoperator_download_url="https://github.com/KubeOperator/KubeOperator/releases/latest/download/"
 
