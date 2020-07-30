@@ -47,9 +47,10 @@ fi
 # 解压离线文件
 if [ -d $CURRENT_DIR/docker ];then
 # 离线安装
+    cp -rp $CURRENT_DIR/kubeoperator $KO_BASE
     tar zxvf $CURRENT_DIR/ansible.tar.gz -C $CURRENT_DIR > /dev/null 2>&1
     cp -rp $CURRENT_DIR/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
-    cp -rp $CURRENT_DIR/installer/koctl $KO_BASE
+    cp -rp $CURRENT_DIR/koctl $KO_BASE/kubeoperator
     tar zxvf $CURRENT_DIR/nexus-data.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
 else
 # 在线安装
@@ -61,7 +62,7 @@ else
     log "解压 nexus "
     tar zxvf $CURRENT_DIR/nexus-data.origin.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
 fi
-sed -i "s/^KO_BASE=\/opt.*/KO_BASE=\/$KO_BASE/g "  $KO_BASE/kubeoperator/koctl
+sed -i "s/^KO_BASE=\/opt.*/KO_BASE=\/\${KO_BASE}/g"  $KO_BASE/kubeoperator/koctl
 cp -rp  $KO_BASE/kubeoperator/koctl /usr/local/bin/
 
 # 1.检测 docker 是否存在
