@@ -118,8 +118,8 @@ while [ $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|wc -l) -gt 0 ]
 do
   for service in $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|awk '{print $1}')
   do
-  docker restart ${service} 2>&1
-  log "等待容器 ${service} 启动成功" | tee -a ${CURRENT_DIR}/install.log
+  docker start ${service} 2>&1 | tee -a ${CURRENT_DIR}/install.log
+  log "等待容器 ${service} 启动成功" 2>&1 | tee -a ${CURRENT_DIR}/install.log
   sleep 5s
   done
 done
