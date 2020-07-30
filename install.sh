@@ -62,7 +62,7 @@ else
     log "解压 nexus "
     tar zxvf $CURRENT_DIR/nexus-data.origin.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
 fi
-sed -i "s/^KO_BASE=\/opt.*/KO_BASE=\/\${KO_BASE}/g"  $KO_BASE/kubeoperator/koctl
+sed -i -e "s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/koctl
 cp -rp  $KO_BASE/kubeoperator/koctl /usr/local/bin/
 
 # 1.检测 docker 是否存在
