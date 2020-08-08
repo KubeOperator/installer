@@ -55,8 +55,7 @@ function unarchive() {
   if [ -d ${CURRENT_DIR}/docker ];then
   # 离线安装
       cp -rp ${CURRENT_DIR}/kubeoperator $KO_BASE
-      cp -rp ${CURRENT_DIR}//koctl $KO_BASE/kubeoperator
-      tar zxvf ${CURRENT_DIR}/nexus-data.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
+      cp -rp ${CURRENT_DIR}/koctl $KO_BASE/kubeoperator
   else
   # 在线安装
       cp -rp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/installer/kubeoperator $KO_BASE
