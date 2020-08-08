@@ -33,7 +33,7 @@ if [ ! $CURRENT_DIR ];then
 fi
 
 # 配置 kubeoperator
-function ko_config() {
+function set_dir() {
   if read -t 120 -p "设置KubeOperator安装目录,默认/opt: " KO_BASE;then
   if [ "$KO_BASE" != "" ];then
     echo "你选择的安装路径为 $KO_BASE"
@@ -72,6 +72,11 @@ function unarchive() {
   echo "version: ${KO_VERSION}" > $KO_BASE/kubeoperator/conf/kubeoperator.conf
 }
 
+function ko_config() {
+   sed -i -e "s#KO_BASE=.*#KO_BASE=$KO_BASE#g" $KO_BASE/kubeoperator.conf
+   sed -i -e "s#KO_TAG=.*#KO_TAG=$KO_VERSION#g" $KO_BASE/kubeoperator.conf
+   ln -s $KO_BASE/kubeoperator.conf $KO_BASE/kubeoperator/.env
+}
 
 # 配置docker，私有 docker 仓库授信
 function config_docker() {
@@ -181,7 +186,7 @@ function ko_start() {
 }
 
 function main() {
-  ko_config
+  set_dir
   unarchive
   install_docker
   load_image
