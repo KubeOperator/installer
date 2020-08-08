@@ -107,12 +107,12 @@ EOF
 # 检测 docker 是否存在
 function install_docker() {
   if which docker docker-compose ;then
-    echo "docker 已经安装，跳过安装步骤"
+    log "docker 已经安装，跳过安装步骤"
     config_docker
     if systemctl status docker|grep running;then
-      echo "docker 运行正常"
+      log "docker 运行正常"
     else
-      echo "docker 已经安装，跳过安装步骤"
+      log "docker 已经安装，跳过安装步骤"
     fi
   else
    if [[ -d docker ]]; then
@@ -148,13 +148,13 @@ function install_docker() {
 function load_image() {
   export COMPOSE_HTTP_TIMEOUT=180
   if [[ -d ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/images ]]; then
-     log "加载镜像"
+     log "... 加载镜像"
      cd  $CURRENT_DIR
      for i in $(ls images); do
         docker load -i images/$i 2>&1 | tee -a ${CURRENT_DIR}/install.log
      done
   else
-     log "拉取镜像"
+     log "... 拉取镜像"
      cd $KO_BASE/kubeoperator/ && docker-compose pull 2>&1 | tee -a ${CURRENT_DIR}/install.log
      cd -
   fi
