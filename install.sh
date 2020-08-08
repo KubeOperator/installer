@@ -62,7 +62,7 @@ function unarchive() {
       cp -rp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/installer/kubeoperator $KO_BASE
       cp -rp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/installer/koctl $KO_BASE/kubeoperator
       log "解压 ansible "
-      tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ansible.tar.gz -C $CURRENT_DIR > /dev/null 2>&1
+      tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ansible.tar.gz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION} > /dev/null 2>&1
       cp -rp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
       log "解压 nexus "
       tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/nexus-data.origin.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
