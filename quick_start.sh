@@ -27,15 +27,28 @@ else
 fi
 
 # 下载离线包
-mkdir -p ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}
-wget --no-check-certificate $nexus_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}
-wget --no-check-certificate $ansible_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}
-wget --no-check-certificate $kubeoperator_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}
+function download() {
+  mkdir -p ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}
+  wget --no-check-certificate $nexus_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}
+  wget --no-check-certificate $ansible_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}
+  wget --no-check-certificate $kubeoperator_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}
 
-if [ -f ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/kubeoperator_installer.tar.gz ];then
-# 执行在线安装
-  echo "开始解压离线包..."
-  tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/kubeoperator_installer.tar.gz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}> /dev/null 2>&1
+  if [ -f ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/kubeoperator_installer.tar.gz ];then
+  # 执行在线安装
+    echo "开始解压离线包..."
+    tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/kubeoperator_installer.tar.gz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}> /dev/null 2>&1
+  fi
+}
+
+if [ ! -d ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION} ];then
+  download
+elif [ ! -e ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/nexus-data.origin.tar.gz ]; then
+  wget --no-check-certificate $nexus_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}
+elif [ ! -e ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ansible.tar.gz  ]; then
+  wget --no-check-certificate $ansible_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}
+else
+  echo "离线包已经下载完成"
 fi
+
 cd ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/installer/
 /bin/bash install.sh
