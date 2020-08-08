@@ -69,6 +69,7 @@ function unarchive() {
   fi
   sed -i -e "s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/koctl
   cp -rp  $KO_BASE/kubeoperator/koctl /usr/local/bin/
+  echo "version: ${KO_VERSION}" > $KO_BASE/kubeoperator/conf/kubeoperator.conf
 }
 
 
