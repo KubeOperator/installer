@@ -76,23 +76,15 @@ function remove_dir() {
     rm -rf ${KO_BASE}/kubeoperator 2&> /dev/null
 }
 function remove_service() {
-    echo -e "停止 KubeOperator 服务进程"
-    if [ -a /etc/systemd/system/kubeops.serviced ] ;then
-        systemctl stop kubeops 2&> /dev/null
-        systemctl disable kubeops 2&> /dev/null
-        rm -rf /etc/systemd/system/kubeops.serviced
-        rm -rf /usr/local/bin/koctl
-    fi
     if [ -a ${KO_BASE}/kubeoperator/docker-compose.yml ]; then
-        cd ${KO_BASE}/kubeoperator && docker-compose down -v
-    else
-        read -p "强力卸载将会完全清除主机上的所有容器和数据，是否继续： y/n : " yn
-        if [ "$yn" == "Y" ] || [ "$yn" == "y" ]; then
-            docker stop  $(docker ps -q -a)
-            docker rm -f -v $(docker ps -q -a) 2&> /dev/null
-        else
-            exit 0
-        fi
+      read -p "卸载将会完全清除 KubeOperator 的所有容器和数据，是否继续： y/n : " yn
+      if [ "$yn" == "Y" ] || [ "$yn" == "y" ]; then
+      echo -e "停止 KubeOperator 服务进程"
+      cd ${KO_BASE}/kubeoperator && docker-compose down -v
+      rm -rf /usr/local/bin/koctl
+      else
+      exit 0
+      fi
     fi
 }
 

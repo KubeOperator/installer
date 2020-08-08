@@ -3,7 +3,7 @@
 
 #  定义离线文件下载地址
 export CURRENT_DIR=$(cd "$(dirname "$0")";pwd)
-export KO_VERSION=$(curl -s https://github.com/kubeoperator/kubeoperator/releases/latest/download 2>&1 |grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
+export KO_VERSION=$(curl -s https://github.com/wanghe-fit2cloud/KubeOperator/releases/latest/download 2>&1 |grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
 export ANSIBLE_VERSION=$(curl -s https://github.com/KubeOperator/ansible/releases/latest/download 2>&1 |grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
 
 nexus_download_url="http://172.16.10.63/ko-3.0/data/nexus/nexus-data.origin.tar.gz"
@@ -27,14 +27,15 @@ else
 fi
 
 # 下载离线包
-wget --no-check-certificate $nexus_download_url
-wget --no-check-certificate $ansible_download_url
-wget --no-check-certificate $kubeoperator_download_url
+mkdir -p ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}
+wget --no-check-certificate $nexus_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}
+wget --no-check-certificate $ansible_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}
+wget --no-check-certificate $kubeoperator_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}
 
 if [ -f $CURRENT_DIR/kubeoperator_installer.tar.gz ];then
 # 执行在线安装
   echo "开始解压离线包..."
-  tar zxvf $CURRENT_DIR/kubeoperator_installer.tar.gz -C $CURRENT_DIR > /dev/null 2>&1
+  tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/kubeoperator_installer.tar.gz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}> /dev/null 2>&1
 fi
-cd $CURRENT_DIR/installer/
+cd ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/installer/
 /bin/bash install.sh
