@@ -73,9 +73,9 @@ function unarchive() {
 }
 
 function ko_config() {
-   sed -i -e "s#KO_BASE=.*#KO_BASE=$KO_BASE#g" $KO_BASE/kubeoperator.conf
-   sed -i -e "s#KO_TAG=.*#KO_TAG=$KO_VERSION#g" $KO_BASE/kubeoperator.conf
-   ln -s $KO_BASE/kubeoperator.conf $KO_BASE/kubeoperator/.env
+   sed -i -e "s#KO_BASE=.*#KO_BASE=$KO_BASE#g" $KO_BASE/kubeoperator/kubeoperator.conf
+   sed -i -e "s#KO_TAG=.*#KO_TAG=$KO_VERSION#g" $KO_BASE/kubeoperator/kubeoperator.conf
+   ln -s $KO_BASE/kubeoperator/kubeoperator.conf $KO_BASE/kubeoperator/.env
 }
 
 # 配置docker，私有 docker 仓库授信
