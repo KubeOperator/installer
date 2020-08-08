@@ -47,8 +47,6 @@ function set_dir() {
   fi
 }
 
-
-
 # 解压离线文件
 function unarchive() {
   colorMsg $yellow "开始解压离线包 ..."
@@ -62,10 +60,10 @@ function unarchive() {
       cp -rp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/installer/kubeoperator $KO_BASE
       cp -rp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/installer/koctl $KO_BASE/kubeoperator
       log "解压 ansible "
-      tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ansible.tar.gz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION} > /dev/null 2>&1
-      cp -rp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
+      tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/${KO_VERSION}.tar.gz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION} > /dev/null 2>&1
+      cp -rp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ansible-${KO_VERSION} $KO_BASE/kubeoperator/data/kobe/project/ko
       log "解压 nexus "
-      tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/nexus-data.origin.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
+      tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/nexus-${KO_VERSION}.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
       sed -i -e "s#KO_TAG=.*#KO_TAG=$KO_VERSION#g" $KO_BASE/kubeoperator/kubeoperator.conf
   fi
   sed -i -e "s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/koctl
@@ -159,7 +157,6 @@ function load_image() {
      cd -
   fi
 }
-
 
 # 启动 kubeoperator
 function ko_start() {
