@@ -32,7 +32,7 @@ wget --no-check-certificate $nexus_download_url -P ${CURRENT_DIR}/kubeoperator-r
 wget --no-check-certificate $ansible_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}
 wget --no-check-certificate $kubeoperator_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}
 
-if [ -f $CURRENT_DIR/kubeoperator_installer.tar.gz ];then
+if [ -f ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/kubeoperator_installer.tar.gz ];then
 # 执行在线安装
   echo "开始解压离线包..."
   tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/kubeoperator_installer.tar.gz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}> /dev/null 2>&1
