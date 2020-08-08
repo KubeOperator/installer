@@ -66,6 +66,7 @@ function unarchive() {
       cp -rp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
       log "解压 nexus "
       tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/nexus-data.origin.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
+      sed -i -e "s#KO_TAG=.*#KO_TAG=$KO_VERSION#g" $KO_BASE/kubeoperator/kubeoperator.conf
   fi
   sed -i -e "s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/koctl
   cp -rp  $KO_BASE/kubeoperator/koctl /usr/local/bin/
@@ -73,7 +74,6 @@ function unarchive() {
 
 function ko_config() {
    sed -i -e "s#KO_BASE=.*#KO_BASE=$KO_BASE#g" $KO_BASE/kubeoperator/kubeoperator.conf
-   sed -i -e "s#KO_TAG=.*#KO_TAG=$KO_VERSION#g" $KO_BASE/kubeoperator/kubeoperator.conf
    ln -s $KO_BASE/kubeoperator/kubeoperator.conf $KO_BASE/kubeoperator/.env
 }
 
