@@ -16,6 +16,10 @@ function log() {
    echo -e "${message}" 2>&1 | tee -a ${CURRENT_DIR}/install.log
 }
 
+if [ ! $KO_VERSION ];then
+  KO_VERSION=$(cat kubeoperator/kubeoperator.conf|grep "KO_TAG"|awk -F= '{print $2}')
+fi
+
 echo
 cat << EOF
 ██╗  ██╗██╗   ██╗██████╗ ███████╗ ██████╗ ██████╗ ███████╗██████╗  █████╗ ████████╗ ██████╗ ██████╗
