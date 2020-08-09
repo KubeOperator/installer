@@ -145,7 +145,7 @@ function install_docker() {
 # 加载镜像
 function load_image() {
   export COMPOSE_HTTP_TIMEOUT=180
-  if [[ -d ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/images ]]; then
+  if [[ -d ${CURRENT_DIR}/images ]]; then
      log "... 加载镜像"
      cd  $CURRENT_DIR
      for i in $(ls images); do
