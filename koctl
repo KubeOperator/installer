@@ -3,8 +3,24 @@ action=$1
 target=$2
 args=$@
 
+red=31
+green=32
+yellow=33
+blue=34
+
 KO_BASE=/opt
+CWD=$(pwd)
+BACKUP_DIR=${KO_BASE}/kubeoperator_backup
+BACKUP_FILE=${BACKUP_DIR}/kubeoperator-backup-`date +%F_%T`.tar.gz
+
 export COMPOSE_HTTP_TIMEOUT=180
+export LATEST_KO_VERSION=$(curl -s https://github.com/wanghe-fit2cloud/KubeOperator/releases/latest/download 2>&1 |grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
+export CURRENT_KO_VERSION=`cat ${KO_BASE}/kubeoperator/kubeoperator.conf|grep KO_TAG|awk -F= '{print $2}'`
+export OFFLINE_KO_VERSION=$(pwd|grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
+export KUBEOPERATOR_DOWNLOAD_URL="https://github.com/wanghe-fit2cloud/KubeOperator/releases/latest/download/installer-${target}.tar.gz"
+export ANSIBLE_DOWNLOAD_URL="https://github.com/wanghe-fit2cloud/KubeOperator/releases/latest/download/ansible-${target}.tar.gz"
+
+
 
 function usage() {
    echo "kubeoperator 控制脚本"
@@ -12,7 +28,6 @@ function usage() {
    echo "Usage: "
    echo "  ./koctl.sh [COMMAND] [ARGS...]"
    echo "  ./koctl.sh --help"
-   echo
    echo "Commands: "
    echo "  status    查看 kubeoperator 服务运行状态"
    echo "  start     启动 kubeoperator 服务"
@@ -23,8 +38,15 @@ function usage() {
    echo "  pull      在线拉取 kubeoperator 最新镜像"
    echo "  up        启动 kubeoperator 版本信息"
    echo "  logs      查看 kubeoperator 日志信息"
-   echo "  down      删除 kubeoperator 容器（不影响持久化数据）"
+   echo "  down      删除 kubeoperator 容器(不影响持久化数据)"
    echo "  version   查看 kubeoperator 版本信息"
+   echo "  bakcup    备份 KubeOperator，备份前需先停止 KubeOperator 服务"
+   echo "  restore   恢复到 KubeOperator 指定的备份,例：koctl restore kubeoperator-backup-xxx.tar.gz"
+   echo "  upgrade   升级 KubeOperator 版本,在线升级默认升级到最新版本，也可指定升级版本，例: koctl upgrade v3.0.1，离线升级请参考官方文档"
+}
+
+function colorMsg() {
+  echo -e "\033[$1m $2 \033[0m"
 }
 
 function status() {
@@ -100,6 +122,92 @@ function uninstall() {
     success
 }
 
+function backup() {
+  koctl stop
+  mkdir -p $BACKUP_DIR
+  cd ${KO_BASE}
+  colorMsg $yellow "... 开始备份,数据文件较大，请耐心等待，保存终端在线" | tee -a ${CWD}/upgrade.log
+  sleep 5s
+  if tar zcvf $BACKUP_FILE kubeoperator 1>/dev/null;then
+  koctl start
+  colorMsg $green "备份完成,备份文件存放至: $BACKUP_FILE" | tee -a ${CWD}/upgrade.log
+  else
+  colorMsg $red "备份失败，请重新备份" | tee -a ${CWD}/upgrade.log
+  fi
+}
+
+function restore() {
+  koctl down| tee -a ${CWD}/upgrade.log
+  mv -n ${KO_BASE}/kubeoperator ${KO_BASE}/kubeoperator-bak | tee -a ${CWD}/upgrade.log
+  colorMsg $yellow "... 开始恢复" | tee -a ${CWD}/upgrade.log
+  tar zxvf $target -C ${KO_BASE}/ 1>/dev/null | tee -a ${CWD}/upgrade.log
+  if [ $? -eq 0 ];then
+    koctl up
+    colorMsg $green "恢复完成" | tee -a ${CWD}/upgrade.log
+  else
+    colorMsg $red "恢复失败，$target 解压异常" | tee -a ${CWD}/upgrade.log
+  fi
+}
+
+function upgrade() {
+    if read -p "是否执行备份，(若已经备份成功可跳过此步骤): [y/n]: " yn;then
+      if [ "$yn" == "Y" ] || [ "$yn" == "y" ];then
+        backup | tee -a ${CWD}/upgrade.log
+      else
+        echo "... 跳过备份" | tee -a ${CWD}/upgrade.log
+      fi
+    fi
+    if [[ -d $CWD/images ]] && [[ -f $CWD/nexus-data.tar.gz ]]; then
+       colorMsg $green "... 停止kubeoperator服务" | tee -a ${CWD}/upgrade.log
+       koctl down
+       colorMsg $green "... 加载镜像" | tee -a ${CWD}/upgrade.log
+       cd  $CURRENT_DIR
+       for i in $(ls $CWD/images); do
+          docker load -i $CWD/images/$i 2>&1 | tee -a ${CWD}/upgrade.log
+       done
+       colorMsg $green "... 解压离线包" | tee -a ${CWD}/upgrade.log
+       tar zxvf $CWD/nexus-data.tar.gz -C $KO_BASE/kubeoperator/data 1>/dev/null | tee -a ${CWD}/upgrade.log
+       cp -rnp $CWD/kubeoperator/conf/* $KO_BASE/kubeoperator/conf/ | tee -a ${CWD}/upgrade.log
+       sed -i -e "s#KO_TAG=.*#KO_TAG=$OFFLINE_KO_VERSION#g" $KO_BASE/kubeoperator/kubeoperator.conf | tee -a ${CWD}/upgrade.log
+       koctl up
+       colorMsg $green "升级完成，当前版本: $OFFLINE_KO_VERSION" | tee -a ${CWD}/upgrade.log
+    else
+    colorMsg $yellow "\n 提示:在线升级请确保当前主机可以正常连接互联网,升级前会先停止KubeOperator服务" | tee -a ${CWD}/upgrade.log
+    if [ ! -z `echo ${target}|grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}"` ];then
+       LATEST_KO_VERSION=${target}
+    fi
+    if read -p  "升级操作将会升级到目标版本: -$LATEST_KO_VERSION,是否继续[y/n]: " yn;then
+       if [ "$yn" == "Y" ] || [ "$yn" == "y" ] || [ "$target" == "-y" ];then
+          colorMsg $green "... 停止kubeoperator服务" | tee -a ${CWD}/upgrade.log
+          koctl down
+          sed -i -e "s#KO_TAG=.*#KO_TAG=$LATEST_KO_VERSION#g" $KO_BASE/kubeoperator/kubeoperator.conf | tee -a ${CWD}/upgrade.log
+          dir_name=$CWD/kubeoperator-upgrade-$LATEST_KO_VERSION
+          rm -rf $dir_name | tee -a ${CWD}/upgrade.log
+          mkdir -p $dir_name | tee -a ${CWD}/upgrade.log
+          wget --no-check-certificate $KUBEOPERATOR_DOWNLOAD_URL -P $dir_name | tee -a ${CWD}/upgrade.log
+          wget --no-check-certificate $ANSIBLE_DOWNLOAD_URL -P $dir_name| tee -a ${CWD}/upgrade.log
+          tar zxvf $dir_name/installer-${LATEST_KO_VERSION}.tar.gz -C $dir_name| tee -a ${CWD}/upgrade.log
+          tar zxvf $dir_name/ansible-${LATEST_KO_VERSION}.tar.gz -C $dir_name| tee -a ${CWD}/upgrade.log
+          cp -rnp $dir_name/installer/kubeoperator/conf/* $KO_BASE/kubeoperator/conf/ | tee -a ${CWD}/upgrade.log
+          cp -rnp $dir_name/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
+          colorMsg $yellow "... 拉取镜像" | tee -a ${CWD}/upgrade.log
+          koctl pull | tee -a ${CWD}/upgrade.log
+          koctl up | tee -a ${CWD}/upgrade.log
+          koctl status | tee -a ${CWD}/upgrade.log
+          if [ $(docker ps -a|grep kubeoperator|wc -l) -gt 0 ] && [ $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|wc -l) -eq 0 ];then
+            colorMsg $green "升级完成，当前版本: $LATEST_KO_VERSION" | tee -a ${CWD}/upgrade.log
+          else
+            colorMsg $red "升级失败" | tee -a ${CWD}/upgrade.log
+          fi
+        else
+          exit 0
+       fi
+       else
+          exit 0
+    fi
+    fi
+}
+
 function main() {
     case "${action}" in
       status)
@@ -134,6 +242,15 @@ function main() {
          ;;
       logs)
          logs
+         ;;
+      upgrade)
+         upgrade
+         ;;
+      backup)
+         backup
+         ;;
+      restore)
+         restore
          ;;
       help)
          usage
