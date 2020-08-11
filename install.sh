@@ -6,7 +6,7 @@ green=32
 yellow=33
 blue=34
 
-
+set -e
 # 检测系统架构，目前支持 arm64 和 amd64
 os=`uname -a`
 if [[ $os =~ 'aarch64' ]];then
