@@ -2,7 +2,7 @@ version: "2.2"
 services:
 
   ui:
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/ui:${KO_TAG}
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/ui:${KO_TAG}-${OS_ARCH}
     container_name: kubeoperator_ui
     restart: always
     healthcheck:
@@ -12,7 +12,7 @@ services:
       retries: 10
 
   server:
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/server:${KO_TAG}
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/server:${KO_TAG}-${OS_ARCH}
     container_name: kubeoperator_server
     volumes:
       - ./conf/app.yaml:/etc/ko/app.yaml
@@ -27,7 +27,7 @@ services:
         condition: service_healthy
 
   kobe:
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kobe:${KO_TAG}
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kobe:${KO_TAG}-${OS_ARCH}
     volumes:
       - ./data/kobe:/var/kobe/data
     restart: always
@@ -39,7 +39,7 @@ services:
       retries: 10
 
   kotf:
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kotf:${KO_TAG}
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kotf:${KO_TAG}-${OS_ARCH}
     container_name: kubeoperator_kotf
     restart: always
     volumes:
