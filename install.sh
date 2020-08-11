@@ -11,7 +11,7 @@ blue=34
 os=`uname -a`
 if [[ $os =~ 'aarch64' ]];then
   architecture="arm64"
-elif [[ $os =~ 'x86_64' ]]; then
+elif [[ $os =~ 'x86_64' ]];then
   architecture="amd64"
 else
   colorMsg $red "暂不支持的系统架构，请参阅官方文档，选择受支持的系统"
@@ -154,7 +154,7 @@ function install_docker() {
    else
       log "... 在线安装 docker"
       wget --no-check-certificate  $docker_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}| tee -a ${CURRENT_DIR}/install.log
-      tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/docker-$architecture.tgz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ | tee -a ${CURRENT_DIR}/install.log
+      tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/docker-$docker_version.tgz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ | tee -a ${CURRENT_DIR}/install.log
       \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/docker/* /usr/bin/ | tee -a ${CURRENT_DIR}/install.log
       \cp -rfp $KO_BASE/kubeoperator/conf/docker.service /etc/systemd/system/ | tee -a ${CURRENT_DIR}/install.log
       log "... 在线安装 docker-compose"
