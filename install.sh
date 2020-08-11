@@ -24,7 +24,7 @@ else
   docker_compose_version="1.26.2"
 fi
 docker_version="19.03.9"
-docker_download_url="https://kubeoperator.fit2cloud.com/docker/$docker_version/$architecture/docker-$architecture.tgz"
+docker_download_url="https://kubeoperator.fit2cloud.com/docker/$docker_version/$architecture/docker-$docker_version.tgz"
 docker_compose_download_url="https://kubeoperator.fit2cloud.com/docker-compose/$architecture/$docker_compose_version/docker-compose"
 
 function colorMsg()
