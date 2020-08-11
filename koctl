@@ -31,17 +31,17 @@ function usage() {
    echo "  ./koctl.sh [COMMAND] [ARGS...]"
    echo "  ./koctl.sh --help"
    echo "Commands: "
-   echo "  status    查看 kubeoperator 服务运行状态"
-   echo "  start     启动 kubeoperator 服务"
-   echo "  stop      停止 kubeoperator 服务"
-   echo "  restart   重启 kubeoperator 服务"
-   echo "  reload    重新加载 kubeoperator 服务"
-   echo "  uninstall 卸载 kubeoperator 服务"
-   echo "  pull      在线拉取 kubeoperator 最新镜像"
-   echo "  up        启动 kubeoperator 版本信息"
-   echo "  logs      查看 kubeoperator 日志信息"
-   echo "  down      删除 kubeoperator 容器(不影响持久化数据)"
-   echo "  version   查看 kubeoperator 版本信息"
+   echo "  status    查看 KubeOperator 服务运行状态"
+   echo "  start     启动 KubeOperator 服务"
+   echo "  stop      停止 KubeOperator 服务"
+   echo "  restart   重启 KubeOperator 服务"
+   echo "  reload    重新加载 KubeOperator 服务"
+   echo "  uninstall 卸载 KubeOperator 服务"
+   echo "  pull      在线拉取 KubeOperator 最新镜像"
+   echo "  up        启动 KubeOperator 版本信息"
+   echo "  logs      查看 KubeOperator 日志信息"
+   echo "  down      删除 KubeOperator 容器(不影响持久化数据)"
+   echo "  version   查看 KubeOperator 版本信息"
    echo "  bakcup    备份 KubeOperator，备份前需先停止 KubeOperator 服务"
    echo "  restore   恢复到 KubeOperator 指定的备份,例：koctl restore kubeoperator-backup-xxx.tar.gz"
    echo "  upgrade   升级 KubeOperator 版本,在线升级默认升级到最新版本，也可指定升级版本，例: koctl upgrade v3.0.1，离线升级请参考官方文档"
@@ -93,7 +93,7 @@ function version() {
 }
 
 function success(){
-    echo -e "\033[32m kubeOperator 卸载完成. \033[0m"
+    echo -e "\033[32m KubeOperator 卸载完成. \033[0m"
 }
 function remove_dir() {
     echo -e "删除 KubeOperator 工作目录"
@@ -160,7 +160,7 @@ function upgrade() {
       fi
     fi
     if [[ -d $CWD/images ]] && [[ -f $CWD/nexus-data.tar.gz ]]; then
-       colorMsg $green "... 停止kubeoperator服务" | tee -a ${CWD}/upgrade.log
+       colorMsg $green "... 停止KubeOperator服务" | tee -a ${CWD}/upgrade.log
        koctl down
        colorMsg $green "... 加载镜像" | tee -a ${CWD}/upgrade.log
        cd  $CURRENT_DIR
@@ -181,7 +181,7 @@ function upgrade() {
     fi
     if read -p  "升级操作将会升级到目标版本: -$LATEST_KO_VERSION,是否继续[y/n]: " yn;then
        if [ "$yn" == "Y" ] || [ "$yn" == "y" ] || [ "$target" == "-y" ];then
-          colorMsg $green "... 停止kubeoperator服务" | tee -a ${CWD}/upgrade.log
+          colorMsg $green "... 停止KubeOperator服务" | tee -a ${CWD}/upgrade.log
           koctl down
           sed -i -e "s#KO_TAG=.*#KO_TAG=$LATEST_KO_VERSION#g" $KO_BASE/kubeoperator/kubeoperator.conf | tee -a ${CWD}/upgrade.log
           dir_name=$CWD/kubeoperator-upgrade-$LATEST_KO_VERSION

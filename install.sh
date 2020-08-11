@@ -202,11 +202,11 @@ function ko_start() {
     done
     break
   done
-  if [ $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|wc -l) -eq 0 ];then
+  if [ $(docker ps -a|grep kubeoperator|wc -l) -gt 0 ] && [ $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|wc -l) -eq 0 ];then
     echo -e "======================= KubeOperator 安装完成 =======================\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
     echo -e "请通过以下方式访问:\n URL: \033[33m http://\$LOCAL_IP:80\033[0m \n 用户名: \033[${green}m admin \033[0m \n 初始密码: \033[${green}m kubeoperator@admin123 \033[0m" 2>&1 | tee -a ${CURRENT_DIR}/install.log
   else
-    echo -e "KubeOperator 服务异常，请检查服务是否启动" 2>&1 | tee -a ${CURRENT_DIR}/install.log
+    colorMsg $red "KubeOperator 服务异常，请检查服务是否启动" | tee -a ${CURRENT_DIR}/install.log
     cd  $KO_BASE/kubeoperator/ && docker-compose status
   fi
 }
