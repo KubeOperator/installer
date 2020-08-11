@@ -10,6 +10,7 @@ nexus_download_url="https://kubeoperator.fit2cloud.com/nexus/nexus-${KO_VERSION}
 ansible_download_url="https://github.com/wanghe-fit2cloud/KubeOperator/releases/latest/download/ansible-${KO_VERSION}.tar.gz"
 kubeoperator_download_url="https://github.com/wanghe-fit2cloud/KubeOperator/releases/latest/download/installer-${KO_VERSION}.tar.gz"
 
+set -e
 # 判断 wget 命令是否安装
 if which wget;then
   echo "开始下载离线包"
