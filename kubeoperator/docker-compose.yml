@@ -30,6 +30,7 @@ services:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kobe:${KO_TAG}
     volumes:
       - ./data/kobe:/var/kobe/data
+    restart: always
     container_name: kubeoperator_kobe
     healthcheck:
       test: ["CMD","kobe-inventory"]
@@ -40,6 +41,7 @@ services:
   kotf:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kotf:${KO_TAG}
     container_name: kubeoperator_kotf
+    restart: always
     volumes:
       - ./data/kotf:/var/kotf/data
     healthcheck:
@@ -65,6 +67,7 @@ services:
   mysql:
     image: mysql/mysql-server:8.0.21-amd64
     container_name: kubeoperator_mysql
+    restart: always
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       interval: 5s
@@ -80,6 +83,7 @@ services:
   grafana:
     image: grafana/grafana:7.1.0
     container_name: kubeoperator_grafana
+    restart: always
     env_file:
       - ./conf/grafana.env
     volumes:
