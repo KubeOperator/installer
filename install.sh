@@ -19,9 +19,9 @@ fi
 
 
 if [ "$architecture" == "arm64" ];then
-  docker_compose_version="1.2.2"
+  docker_compose_version="1.22.0"
 else
-  docker_compose_version="1.2.6"
+  docker_compose_version="1.26.2"
 fi
 docker_version="19.03.9"
 docker_download_url="https://kubeoperator.fit2cloud.com/docker/$docker_version/$architecture/docker-$architecture.tgz"
@@ -154,12 +154,12 @@ function install_docker() {
    else
       log "... 在线安装 docker"
       wget --no-check-certificate  $docker_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}| tee -a ${CURRENT_DIR}/install.log
-      tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/docker-$architecture.tgz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/
-      \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/docker/* /usr/bin/
-      \cp -rfp $KO_BASE/kubeoperator/conf/docker.service /etc/systemd/system/
+      tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/docker-$architecture.tgz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ | tee -a ${CURRENT_DIR}/install.log
+      \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/docker/* /usr/bin/ | tee -a ${CURRENT_DIR}/install.log
+      \cp -rfp $KO_BASE/kubeoperator/conf/docker.service /etc/systemd/system/ | tee -a ${CURRENT_DIR}/install.log
       log "... 在线安装 docker-compose"
       wget --no-check-certificate  $docker_compose_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}| tee -a ${CURRENT_DIR}/install.log
-      \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/docker-compose /usr/local/bin/
+      \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/docker-compose /usr/local/bin/ | tee -a ${CURRENT_DIR}/install.log
       sudo chmod +x /usr/local/bin/docker-compose
       log "... 配置 docker"
       config_docker
