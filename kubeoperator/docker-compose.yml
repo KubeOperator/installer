@@ -65,7 +65,7 @@ services:
       retries: 10
 
   mysql:
-    image: mysql/mysql-server:8.0.21-amd64
+    image: mysql/mysql-server:8.0.21-${OS_ARCH}
     container_name: kubeoperator_mysql
     restart: always
     healthcheck:
@@ -98,7 +98,7 @@ services:
         condition: service_healthy
 
   webkubectl:
-    image: kubeoperator/webkubectl:v2.5.0
+    image: kubeoperator/webkubectl:v2.6.0-${OS_ARCH}
     container_name: kubeoperator_webkubectl
     restart: always
     privileged: true
