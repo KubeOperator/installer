@@ -168,6 +168,7 @@ function upgrade() {
           docker load -i $CWD/images/$i 2>&1 | tee -a ${CWD}/upgrade.log
        done
        colorMsg $green "... 解压离线包" | tee -a ${CWD}/upgrade.log
+       rm -rf $KO_BASE/kubeoperator/data/nexus-data
        tar zxvf $CWD/nexus-data.tar.gz -C $KO_BASE/kubeoperator/data 1>/dev/null | tee -a ${CWD}/upgrade.log
        \cp -rf $CWD/kubeoperator/conf/* $KO_BASE/kubeoperator/conf/ | tee -a ${CWD}/upgrade.log
        \cp -rf $CWD/koctl /usr/local/bin | tee -a ${CWD}/upgrade.log
