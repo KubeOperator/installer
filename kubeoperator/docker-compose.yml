@@ -67,7 +67,7 @@ services:
       retries: 10
 
   mysql:
-    image: mysql/mysql-server:8.0.21-${OS_ARCH}
+    image: mysql/mysql-server:8.0.21
     container_name: kubeoperator_mysql
     restart: always
     healthcheck:
@@ -100,7 +100,7 @@ services:
         condition: service_healthy
 
   webkubectl:
-    image: kubeoperator/webkubectl:v2.6.0-${OS_ARCH}
+    image: kubeoperator/webkubectl:v2.6.0
     container_name: kubeoperator_webkubectl
     restart: always
     privileged: true
@@ -112,7 +112,7 @@ services:
 
   nexus:
     restart: always
-    image: docker.io/sonatype/nexus3:3.25.0
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/nexus3:3.25.0-${OS_ARCH}
     container_name: kubeoperator_nexus
     ports:
       - 8081:8081
