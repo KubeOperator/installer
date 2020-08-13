@@ -8,8 +8,8 @@ services:
     healthcheck:
       test: ["CMD", "test", "-f", "/var/run/nginx.pid"]
       interval: 10s
-      timeout: 5s
-      retries: 10
+      timeout: 10s
+      retries: 20
 
   server:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/server:${KO_TAG}-${OS_ARCH}
@@ -21,8 +21,8 @@ services:
     healthcheck:
       test: ["CMD","ps", "-ef", "|", "grep","ko-server"]
       interval: 10s
-      timeout: 5s
-      retries: 10
+      timeout: 10s
+      retries: 20
     depends_on:
       mysql:
         condition: service_healthy
@@ -36,9 +36,9 @@ services:
     container_name: kubeoperator_kobe
     healthcheck:
       test: ["CMD","kobe-inventory"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
+      interval: 10s
+      timeout: 10s
+      retries: 20
 
   kotf:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kotf:${KO_TAG}-${OS_ARCH}
@@ -48,9 +48,9 @@ services:
       - ./data/kotf:/var/kotf/data
     healthcheck:
       test: ["CMD","ps", "-ef", "|", "grep","kotf-server"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
+      interval: 10s
+      timeout: 10s
+      retries: 20
 
   nginx:
     image: nginx:alpine
@@ -63,8 +63,8 @@ services:
     healthcheck:
       test: ["CMD", "test", "-f", "/var/run/nginx.pid"]
       interval: 10s
-      timeout: 5s
-      retries: 10
+      timeout: 10s
+      retries: 20
     depends_on:
       server:
         condition: service_healthy
@@ -75,9 +75,9 @@ services:
     restart: always
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
+      interval: 10s
+      timeout: 10s
+      retries: 20
     env_file:
       - ./conf/mysql.env
     volumes:
@@ -96,8 +96,8 @@ services:
     healthcheck:
       test: ["CMD","ps", "-ef", "|", "grep", "grafana-server"]
       interval: 10s
-      timeout: 5s
-      retries: 10
+      timeout: 10s
+      retries: 20
     depends_on:
       mysql:
         condition: service_healthy
@@ -110,8 +110,8 @@ services:
     healthcheck:
       test: ["CMD","curl","localhost:8080"]
       interval: 10s
-      timeout: 5s
-      retries: 10
+      timeout: 10s
+      retries: 20
 
   nexus:
     restart: always

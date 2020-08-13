@@ -194,7 +194,7 @@ function ko_start() {
   log "开始启动 KubeOperator"
     cd  $KO_BASE/kubeoperator/ && docker-compose up -d 2>&1 | tee -a ${CURRENT_DIR}/install.log
     sleep 15s
-  if ! docker ps|grep kubeoperator_server;then
+  if ! docker ps -a | grep kubeoperator_server;then
     log "... 检测到应用程序未正常运行，尝试重新启动"
     koctl up | tee -a ${CURRENT_DIR}/install.log
   fi
