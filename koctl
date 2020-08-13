@@ -12,7 +12,7 @@ KO_BASE=/opt
 CWD=$(pwd)
 BACKUP_DIR=${KO_BASE}/kubeoperator_backup
 BACKUP_FILE=${BACKUP_DIR}/kubeoperator-backup-`date +%F_%T`.tar.gz
-
+set -e
 
 export COMPOSE_HTTP_TIMEOUT=180
 export LATEST_KO_VERSION=$(curl -s https://github.com/wanghe-fit2cloud/KubeOperator/releases/latest/download 2>&1 |grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
@@ -20,9 +20,6 @@ export CURRENT_KO_VERSION=`cat ${KO_BASE}/kubeoperator/kubeoperator.conf|grep KO
 export OFFLINE_KO_VERSION=$(pwd|grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
 export KUBEOPERATOR_DOWNLOAD_URL="https://github.com/wanghe-fit2cloud/KubeOperator/releases/latest/download/installer-${target}.tar.gz"
 export ANSIBLE_DOWNLOAD_URL="https://github.com/wanghe-fit2cloud/KubeOperator/releases/latest/download/ansible-${target}.tar.gz"
-
-
-
 
 function usage() {
    echo "kubeoperator 控制脚本"
