@@ -105,6 +105,7 @@ function ko_config() {
 # 配置docker，私有 docker 仓库授信
 function config_docker() {
   if ! grep registry.kubeoperator.io /etc/hosts;then
+    log  "... 添加 kubeoperator docker 仓库"
     echo "127.0.0.1 registry.kubeoperator.io" >> /etc/hosts
   fi
   if [ -r /etc/docker/daemon.json ];then
@@ -191,8 +192,12 @@ function load_image() {
 # 启动 kubeoperator
 function ko_start() {
   log "开始启动 KubeOperator"
-  cd  $KO_BASE/kubeoperator/ && docker-compose up -d 2>&1 | tee -a ${CURRENT_DIR}/install.log
-  sleep 15s
+    cd  $KO_BASE/kubeoperator/ && docker-compose up -d 2>&1 | tee -a ${CURRENT_DIR}/install.log
+    sleep 15s
+  if ! docker ps|grep kubeoperator_server;then
+    log "... 检测到应用程序未正常运行，尝试重新启动"
+    koctl up | tee -a ${CURRENT_DIR}/install.log
+  fi
   while [ $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|wc -l) -gt 0 ]
   do
     for service in $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|awk '{print $1}')
