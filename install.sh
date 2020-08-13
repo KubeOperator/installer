@@ -197,7 +197,7 @@ function ko_start() {
   if ! docker ps|grep kubeoperator_server;then
     log "... 检测到应用程序未正常运行，尝试重新启动"
     koctl up | tee -a ${CURRENT_DIR}/install.log
-  fi``
+  fi
   while [ $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|wc -l) -gt 0 ]
   do
     for service in $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|awk '{print $1}')
