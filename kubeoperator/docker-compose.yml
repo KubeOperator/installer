@@ -65,9 +65,6 @@ services:
       interval: 10s
       timeout: 10s
       retries: 20
-    depends_on:
-      server:
-        condition: service_healthy
 
   mysql:
     image: mysql/mysql-server:8.0.21
