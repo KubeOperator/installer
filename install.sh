@@ -6,7 +6,7 @@ green=32
 yellow=33
 blue=34
 
-
+set -e
 # 检测系统架构，目前支持 arm64 和 amd64
 os=`uname -a`
 if [[ $os =~ 'aarch64' ]];then
@@ -105,6 +105,7 @@ function ko_config() {
 # 配置docker，私有 docker 仓库授信
 function config_docker() {
   if ! grep registry.kubeoperator.io /etc/hosts;then
+    log  "... 添加 kubeoperator docker 仓库"
     echo "127.0.0.1 registry.kubeoperator.io" >> /etc/hosts
   fi
   if [ -r /etc/docker/daemon.json ];then
@@ -191,8 +192,12 @@ function load_image() {
 # 启动 kubeoperator
 function ko_start() {
   log "开始启动 KubeOperator"
-  cd  $KO_BASE/kubeoperator/ && docker-compose up -d 2>&1 | tee -a ${CURRENT_DIR}/install.log
-  sleep 15s
+    cd  $KO_BASE/kubeoperator/ && docker-compose up -d 2>&1 | tee -a ${CURRENT_DIR}/install.log
+    sleep 15s
+  if ! docker ps -a | grep kubeoperator_server;then
+    log "... 检测到应用程序未正常运行，尝试重新启动"
+    koctl up | tee -a ${CURRENT_DIR}/install.log
+  fi
   while [ $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|wc -l) -gt 0 ]
   do
     for service in $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|awk '{print $1}')
@@ -204,7 +209,7 @@ function ko_start() {
   done
   if [ $(docker ps -a|grep kubeoperator|wc -l) -gt 0 ] && [ $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|wc -l) -eq 0 ];then
     echo -e "======================= KubeOperator 安装完成 =======================\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
-    echo -e "请通过以下方式访问:\n URL: \033[33m http://\$LOCAL_IP:80\033[0m \n 用户名: \033[${green}m admin \033[0m \n 初始密码: \033[${green}m kubeoperator@admin123 \033[0m" 2>&1 | tee -a ${CURRENT_DIR}/install.log
+    echo -e "请开放防火墙或安全组的80,8081-8083端口,通过以下方式访问:\n URL: \033[33m http://\$LOCAL_IP:80\033[0m \n 用户名: \033[${green}m admin \033[0m \n 初始密码: \033[${green}m kubeoperator@admin123 \033[0m" 2>&1 | tee -a ${CURRENT_DIR}/install.log
   else
     colorMsg $red "KubeOperator 服务异常，请检查服务是否启动" | tee -a ${CURRENT_DIR}/install.log
     cd  $KO_BASE/kubeoperator/ && docker-compose status

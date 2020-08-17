@@ -8,20 +8,21 @@ services:
     healthcheck:
       test: ["CMD", "test", "-f", "/var/run/nginx.pid"]
       interval: 10s
-      timeout: 5s
-      retries: 10
+      timeout: 10s
+      retries: 20
 
   server:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/server:${KO_TAG}-${OS_ARCH}
     container_name: kubeoperator_server
     volumes:
       - ./conf/app.yaml:/etc/ko/app.yaml
+      - ./data/backup:/backup
     restart: always
     healthcheck:
       test: ["CMD","ps", "-ef", "|", "grep","ko-server"]
       interval: 10s
-      timeout: 5s
-      retries: 10
+      timeout: 10s
+      retries: 20
     depends_on:
       mysql:
         condition: service_healthy
@@ -30,13 +31,14 @@ services:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kobe:${KO_TAG}-${OS_ARCH}
     volumes:
       - ./data/kobe:/var/kobe/data
+      - ./data/backup:/backup
     restart: always
     container_name: kubeoperator_kobe
     healthcheck:
       test: ["CMD","kobe-inventory"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
+      interval: 10s
+      timeout: 10s
+      retries: 20
 
   kotf:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kotf:${KO_TAG}-${OS_ARCH}
@@ -46,9 +48,9 @@ services:
       - ./data/kotf:/var/kotf/data
     healthcheck:
       test: ["CMD","ps", "-ef", "|", "grep","kotf-server"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
+      interval: 10s
+      timeout: 10s
+      retries: 20
 
   nginx:
     image: nginx:alpine
@@ -61,18 +63,18 @@ services:
     healthcheck:
       test: ["CMD", "test", "-f", "/var/run/nginx.pid"]
       interval: 10s
-      timeout: 5s
-      retries: 10
+      timeout: 10s
+      retries: 20
 
   mysql:
-    image: mysql/mysql-server:8.0.21-amd64
+    image: mysql/mysql-server:8.0.21
     container_name: kubeoperator_mysql
     restart: always
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
+      interval: 10s
+      timeout: 10s
+      retries: 20
     env_file:
       - ./conf/mysql.env
     volumes:
@@ -91,26 +93,26 @@ services:
     healthcheck:
       test: ["CMD","ps", "-ef", "|", "grep", "grafana-server"]
       interval: 10s
-      timeout: 5s
-      retries: 10
+      timeout: 10s
+      retries: 20
     depends_on:
       mysql:
         condition: service_healthy
 
   webkubectl:
-    image: kubeoperator/webkubectl:v2.5.0
+    image: kubeoperator/webkubectl:v2.6.0
     container_name: kubeoperator_webkubectl
     restart: always
     privileged: true
     healthcheck:
       test: ["CMD","curl","localhost:8080"]
       interval: 10s
-      timeout: 5s
-      retries: 10
+      timeout: 10s
+      retries: 20
 
   nexus:
     restart: always
-    image: docker.io/sonatype/nexus3:3.25.0
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/nexus3:3.25.0-${OS_ARCH}
     container_name: kubeoperator_nexus
     ports:
       - 8081:8081
