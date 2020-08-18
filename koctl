@@ -22,7 +22,7 @@ export KUBEOPERATOR_DOWNLOAD_URL="https://github.com/KubeOperator/KubeOperator/r
 export ANSIBLE_DOWNLOAD_URL="https://github.com/KubeOperator/KubeOperator/releases/latest/download/ansible-${target}.tar.gz"
 
 function usage() {
-   echo "kubeoperator 控制脚本"
+   echo "KubeOperator 控制脚本"
    echo
    echo "Usage: "
    echo "  ./koctl.sh [COMMAND] [ARGS...]"
@@ -57,7 +57,7 @@ function start() {
 }
 function stop() {
    echo
-   colorMsg $green "... Stoping KubeOperator"
+   colorMsg $green "... Stopping KubeOperator"
    cd ${KO_BASE}/kubeoperator; docker-compose  down ${target}
 }
 function restart() {
