@@ -89,7 +89,7 @@ function remove_dir() {
 }
 function remove_service() {
     if [ -a ${KO_BASE}/kubeoperator/docker-compose.yml ]; then
-      read -p "卸载将会完全清除 KubeOperator 的所有容器和数据，是否继续： y/n : " yn
+      read -p "卸载将会完全清除 KubeOperator 的所有容器和数据，是否继续 [y/n] : " yn
       if [ "$yn" == "Y" ] || [ "$yn" == "y" ]; then
       echo -e "停止 KubeOperator 服务进程"
       cd ${KO_BASE}/kubeoperator && docker-compose down -v
@@ -140,7 +140,7 @@ function restore() {
 }
 
 function upgrade() {
-    if read -p "是否执行备份，(若已经备份成功可跳过此步骤): [y/n]: " yn;then
+    if read -p "是否执行备份，(若已经备份成功可跳过此步骤) [y/n]: " yn;then
       if [ "$yn" == "Y" ] || [ "$yn" == "y" ];then
         backup | tee -a ${CWD}/upgrade.log
       else
@@ -170,7 +170,7 @@ function upgrade() {
     else
        target=${LATEST_KO_VERSION}
     fi
-    if read -p  "升级操作将会升级到目标版本: -$LATEST_KO_VERSION,是否继续[y/n]: " yn;then
+    if read -p  "升级操作将会升级到目标版本: -$LATEST_KO_VERSION,是否继续 [y/n]: " yn;then
        if [ "$yn" == "Y" ] || [ "$yn" == "y" ] || [ "$target" == "-y" ];then
           colorMsg $green "... 停止KubeOperator服务" | tee -a ${CWD}/upgrade.log
           koctl stop

@@ -99,7 +99,9 @@ function unarchive() {
 
 function ko_config() {
    sed -i -e "s#KO_BASE=.*#KO_BASE=$KO_BASE#g" $KO_BASE/kubeoperator/kubeoperator.conf
-   ln -s $KO_BASE/kubeoperator/kubeoperator.conf $KO_BASE/kubeoperator/.env
+   if [ ! -f $KO_BASE/kubeoperator/.env ];then
+     ln -s $KO_BASE/kubeoperator/kubeoperator.conf $KO_BASE/kubeoperator/.env
+   fi
 }
 
 # 配置docker，私有 docker 仓库授信
