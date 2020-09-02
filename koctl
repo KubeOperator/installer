@@ -167,8 +167,6 @@ function upgrade() {
     colorMsg $yellow "\n 提示:在线升级请确保当前主机可以正常连接互联网,升级前会先停止KubeOperator服务" | tee -a ${CWD}/upgrade.log
     if [ ! -z `echo ${target}|grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}"` ];then
        LATEST_KO_VERSION=${target}
-    else
-       target=${LATEST_KO_VERSION}
     fi
     if read -p  "升级操作将会升级到目标版本: -$LATEST_KO_VERSION,是否继续 [y/n]: " yn;then
        if [ "$yn" == "Y" ] || [ "$yn" == "y" ] || [ "$target" == "-y" ];then
@@ -178,8 +176,8 @@ function upgrade() {
           dir_name=$CWD/kubeoperator-upgrade-$LATEST_KO_VERSION
           rm -rf $dir_name | tee -a ${CWD}/upgrade.log
           mkdir -p $dir_name | tee -a ${CWD}/upgrade.log
-          wget --no-check-certificate "https://github.com/KubeOperator/KubeOperator/releases/latest/download/installer-${target}.tar.gz" -P $dir_name | tee -a ${CWD}/upgrade.log
-          wget --no-check-certificate "https://github.com/KubeOperator/KubeOperator/releases/latest/download/ansible-${target}.tar.gz" -P $dir_name| tee -a ${CWD}/upgrade.log
+          wget --no-check-certificate "https://github.com/KubeOperator/KubeOperator/releases/download/${LATEST_KO_VERSION}/installer-${LATEST_KO_VERSION}.tar.gz" -P $dir_name | tee -a ${CWD}/upgrade.log
+          wget --no-check-certificate "https://github.com/KubeOperator/KubeOperator/releases/download/${LATEST_KO_VERSION}/ansible-${LATEST_KO_VERSION}.tar.gz" -P $dir_name| tee -a ${CWD}/upgrade.log
           tar zxvf $dir_name/installer-${LATEST_KO_VERSION}.tar.gz -C $dir_name| tee -a ${CWD}/upgrade.log
           tar zxvf $dir_name/ansible-${LATEST_KO_VERSION}.tar.gz -C $dir_name| tee -a ${CWD}/upgrade.log
           \cp -rf $dir_name/installer/kubeoperator/conf/* $KO_BASE/kubeoperator/conf/ | tee -a ${CWD}/upgrade.log
