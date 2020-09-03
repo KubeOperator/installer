@@ -50,13 +50,11 @@ function status() {
    cd ${KO_BASE}/kubeoperator; docker-compose  ps
 }
 function start() {
-   echo
-   colorMsg $green "... Starting KubeOperator"
+   colorMsg $green "[Starting KubeOperator]"
    cd ${KO_BASE}/kubeoperator; docker-compose  up -d  ${target}
 }
 function stop() {
-   echo
-   colorMsg $green "... Stopping KubeOperator"
+   colorMsg $green "[Stopping KubeOperator]"
    cd ${KO_BASE}/kubeoperator; docker-compose  down ${target}
 }
 function restart() {
