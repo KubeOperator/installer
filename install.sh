@@ -99,11 +99,16 @@ function unarchive() {
 
 function ko_config() {
    sed -i -e "s#KO_BASE=.*#KO_BASE=$KO_BASE#g" $KO_BASE/kubeoperator/kubeoperator.conf
-   ln -s $KO_BASE/kubeoperator/kubeoperator.conf $KO_BASE/kubeoperator/.env
+   if [ ! -f $KO_BASE/kubeoperator/.env ];then
+     ln -s $KO_BASE/kubeoperator/kubeoperator.conf $KO_BASE/kubeoperator/.env
+   fi
 }
 
 # 配置docker，私有 docker 仓库授信
 function config_docker() {
+  log  "... 关闭 Firewalld"
+  systemctl stop firewalld | tee -a ${CURRENT_DIR}/install.log
+  systemctl disable firewalld | tee -a ${CURRENT_DIR}/install.log
   if ! grep registry.kubeoperator.io /etc/hosts;then
     log  "... 添加 kubeoperator docker 仓库"
     echo "127.0.0.1 registry.kubeoperator.io" >> /etc/hosts
@@ -126,8 +131,8 @@ cat << EOF > /etc/docker/daemon.json
   }
   }
 EOF
-  systemctl daemon-reload
-  systemctl restart docker
+  systemctl daemon-reload | tee -a ${CURRENT_DIR}/install.log
+  systemctl restart docker | tee -a ${CURRENT_DIR}/install.log
 }
 
 # 检测 docker 是否存在

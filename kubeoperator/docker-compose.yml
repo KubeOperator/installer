@@ -53,7 +53,7 @@ services:
       retries: 20
 
   nginx:
-    image: nginx:alpine
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/nginx:alpine-${OS_ARCH}
     container_name: kubeoperator_nginx
     restart: always
     ports:
@@ -67,7 +67,7 @@ services:
       retries: 20
 
   mysql:
-    image: mysql/mysql-server:8.0.21
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/mysql-server:8.0.21-${OS_ARCH}
     container_name: kubeoperator_mysql
     restart: always
     healthcheck:
@@ -83,7 +83,7 @@ services:
       - ./data/mysql:/var/lib/mysql
 
   grafana:
-    image: grafana/grafana:7.1.0
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/grafana:7.1.0-${OS_ARCH}
     container_name: kubeoperator_grafana
     restart: always
     env_file:
@@ -100,7 +100,7 @@ services:
         condition: service_healthy
 
   webkubectl:
-    image: kubeoperator/webkubectl:v2.6.0
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/webkubectl:v2.6.0-${OS_ARCH}
     container_name: kubeoperator_webkubectl
     restart: always
     privileged: true
