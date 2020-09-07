@@ -63,6 +63,9 @@ function set_dir() {
   if read -t 120 -p "设置KubeOperator安装目录,默认/opt: " KO_BASE;then
   if [ "$KO_BASE" != "" ];then
     echo "你选择的安装路径为 $KO_BASE"
+    if [ ! -d $KO_BASE ];then
+      mkdir -p $KO_BASE
+    fi
   else
     KO_BASE=/opt
     echo "你选择的安装路径为 $KO_BASE"

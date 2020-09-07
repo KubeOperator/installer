@@ -157,6 +157,7 @@ function upgrade() {
        rm -rf $KO_BASE/kubeoperator/data/nexus-data
        tar zxvf $CWD/nexus-data.tar.gz -C $KO_BASE/kubeoperator/data 1>/dev/null | tee -a ${CWD}/upgrade.log
        \cp -rf $CWD/kubeoperator/conf/* $KO_BASE/kubeoperator/conf/ | tee -a ${CWD}/upgrade.log
+       sed -i -e "s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $CWD/koctl
        \cp -rf $CWD/koctl /usr/local/bin | tee -a ${CWD}/upgrade.log
        sed -i -e "s#KO_TAG=.*#KO_TAG=$OFFLINE_KO_VERSION#g" $KO_BASE/kubeoperator/kubeoperator.conf | tee -a ${CWD}/upgrade.log
        koctl start
@@ -179,6 +180,7 @@ function upgrade() {
           tar zxvf $dir_name/installer-${LATEST_KO_VERSION}.tar.gz -C $dir_name| tee -a ${CWD}/upgrade.log
           tar zxvf $dir_name/ansible-${LATEST_KO_VERSION}.tar.gz -C $dir_name| tee -a ${CWD}/upgrade.log
           \cp -rf $dir_name/installer/kubeoperator/conf/* $KO_BASE/kubeoperator/conf/ | tee -a ${CWD}/upgrade.log
+          sed -i -e "s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $dir_name/installer/koctl
           \cp -rf $dir_name/installer/koctl /usr/local/bin | tee -a ${CWD}/upgrade.log
           \cp -rf $dir_name/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
           colorMsg $yellow "... 拉取镜像" | tee -a ${CWD}/upgrade.log
