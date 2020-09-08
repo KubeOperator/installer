@@ -36,9 +36,9 @@ function usage() {
    echo "  pull      在线拉取 KubeOperator 最新镜像"
    echo "  logs      查看 KubeOperator 日志信息"
    echo "  version   查看 KubeOperator 版本信息"
-   echo "  bakcup    备份 KubeOperator，备份前需先停止 KubeOperator 服务"
+   echo "  backup    备份 KubeOperator，备份前需先停止 KubeOperator 服务"
    echo "  restore   恢复到 KubeOperator 指定的备份,例：koctl restore kubeoperator-backup-xxx.tar.gz"
-   echo "  upgrade   升级 KubeOperator 版本,在线升级默认升级到最新版本，也可指定升级版本，例: koctl startgrade v3.0.1，离线升级请参考官方文档"
+   echo "  upgrade   升级 KubeOperator 版本,在线升级默认升级到最新版本，也可指定升级版本，例: koctl upgrade v3.0.1，离线升级请参考官方文档"
 }
 
 function colorMsg() {
