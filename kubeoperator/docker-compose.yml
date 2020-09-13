@@ -19,7 +19,7 @@ services:
       - ./data/backup:/backup
     restart: always
     healthcheck:
-      test: ["CMD","ps", "-ef", "|", "grep","ko-server"]
+      test: ["CMD-SHELL","ps", "-ef", "|", "grep","ko-server"]
       interval: 10s
       timeout: 10s
       retries: 20
