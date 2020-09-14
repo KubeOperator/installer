@@ -74,8 +74,7 @@ function pull() {
    cd ${KO_BASE}/kubeoperator; docker-compose  pull ${target}
 }
 function version() {
-   echo
-   cat ${KO_BASE}/kubeoperator/version
+   echo  "$CURRENT_KO_VERSION"
 }
 
 function success(){
