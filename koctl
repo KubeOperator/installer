@@ -156,10 +156,10 @@ function upgrade() {
        colorMsg $green "... 解压离线包" | tee -a ${CWD}/upgrade.log
        rm -rf $KO_BASE/kubeoperator/data/nexus-data
        tar zxvf $CWD/nexus-data.tar.gz -C $KO_BASE/kubeoperator/data 1>/dev/null | tee -a ${CWD}/upgrade.log
-       \cp -rf $CWD/kubeoperator/conf/* $KO_BASE/kubeoperator/conf/ | tee -a ${CWD}/upgrade.log
-       \cp -rf $CWD/kubeoperator/docker-compose.yml $KO_BASE/kubeoperator | tee -a ${CWD}/upgrade.log
        sed -i -e "1,20s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $CWD/koctl
        \cp -rf $CWD/koctl /usr/local/bin | tee -a ${CWD}/upgrade.log
+       \cp -rf $CWD/kubeoperator/conf/* $KO_BASE/kubeoperator/conf/ | tee -a ${CWD}/upgrade.log
+       \cp -rf $CWD/kubeoperator/docker-compose.yml $KO_BASE/kubeoperator | tee -a ${CWD}/upgrade.log
        sed -i -e "s#KO_TAG=.*#KO_TAG=$OFFLINE_KO_VERSION#g" $KO_BASE/kubeoperator/kubeoperator.conf | tee -a ${CWD}/upgrade.log
        koctl start
        colorMsg $green "升级完成，当前版本: $OFFLINE_KO_VERSION" | tee -a ${CWD}/upgrade.log
@@ -180,11 +180,11 @@ function upgrade() {
           wget --no-check-certificate "https://github.com/KubeOperator/KubeOperator/releases/download/${LATEST_KO_VERSION}/ansible-${LATEST_KO_VERSION}.tar.gz" -P $dir_name| tee -a ${CWD}/upgrade.log
           tar zxvf $dir_name/installer-${LATEST_KO_VERSION}.tar.gz -C $dir_name| tee -a ${CWD}/upgrade.log
           tar zxvf $dir_name/ansible-${LATEST_KO_VERSION}.tar.gz -C $dir_name| tee -a ${CWD}/upgrade.log
-          \cp -rf $dir_name/installer/kubeoperator/conf/* $KO_BASE/kubeoperator/conf/ | tee -a ${CWD}/upgrade.log
-          \cp -rf $dir_name/installer/kubeoperator/docker-compose.yml $KO_BASE/kubeoperator/ | tee -a ${CWD}/upgrade.log
           sed -i -e "1,20s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $dir_name/installer/koctl
           \cp -rf $dir_name/installer/koctl /usr/local/bin | tee -a ${CWD}/upgrade.log
           \cp -rf $dir_name/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
+          \cp -rf $dir_name/installer/kubeoperator/conf/* $KO_BASE/kubeoperator/conf/ | tee -a ${CWD}/upgrade.log
+          \cp -rf $dir_name/installer/kubeoperator/docker-compose.yml $KO_BASE/kubeoperator/ | tee -a ${CWD}/upgrade.log
           colorMsg $yellow "... 拉取镜像" | tee -a ${CWD}/upgrade.log
           koctl pull | tee -a ${CWD}/upgrade.log
           koctl start | tee -a ${CWD}/upgrade.log
