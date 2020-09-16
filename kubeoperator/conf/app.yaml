@@ -26,5 +26,5 @@ grafana:
 webkubectl:
   host: webkubectl
   port: 8080
-corn:
+cron:
   enable: true
