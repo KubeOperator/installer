@@ -168,7 +168,7 @@ function install_docker() {
       \cp -rfp $KO_BASE/kubeoperator/conf/docker.service /etc/systemd/system/ | tee -a ${CURRENT_DIR}/install.log
       log "... 在线安装 docker-compose"
       wget --no-check-certificate  $docker_compose_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}| tee -a ${CURRENT_DIR}/install.log
-      \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/docker-compose /usr/local/bin/ | tee -a ${CURRENT_DIR}/install.log
+      \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/docker-compose /usr/bin/ | tee -a ${CURRENT_DIR}/install.log
       sudo chmod +x /usr/local/bin/docker-compose
       log "... 配置 docker"
       config_docker
