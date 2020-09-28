@@ -16,7 +16,7 @@ services:
     container_name: kubeoperator_server
     volumes:
       - ./conf/app.yaml:/etc/ko/app.yaml
-      - ./data/backup:/backup
+      - ./data/backup:/var/ko/data/backup
     restart: always
     healthcheck:
       test: ["CMD-SHELL","ps", "-ef", "|", "grep","ko-server"]
@@ -31,7 +31,7 @@ services:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kobe:${KO_TAG}-${OS_ARCH}
     volumes:
       - ./data/kobe:/var/kobe/data
-      - ./data/backup:/backup
+      - ./data/backup:/var/ko/data/backup
     restart: always
     container_name: kubeoperator_kobe
     healthcheck:
