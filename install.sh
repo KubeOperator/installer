@@ -202,17 +202,11 @@ function ko_start() {
   log "开始启动 KubeOperator"
     cd  $KO_BASE/kubeoperator/ && docker-compose up -d 2>&1 | tee -a ${CURRENT_DIR}/install.log
     sleep 15s
-  if ! docker ps -a | grep kubeoperator_server;then
-    log "... 检测到应用程序未正常运行，尝试重新启动"
-    koctl up | tee -a ${CURRENT_DIR}/install.log
-  fi
-  while [ $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|wc -l) -gt 0 ]
+  while [ $(docker ps -a|grep kubeoperator|wc -l) -lt 9 ]
   do
-    for service in $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|awk '{print $1}')
-    do
-    docker start ${service} 2>&1 | tee -a ${CURRENT_DIR}/install.log
+    log "... 检测到应用程序未正常运行，尝试重新启动"
     sleep 15s
-    done
+    koctl start
     break
   done
   if [ $(docker ps -a|grep kubeoperator|wc -l) -gt 0 ] && [ $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|wc -l) -eq 0 ];then
