@@ -96,7 +96,7 @@ function unarchive() {
       sed -i -e "s#KO_TAG=.*#KO_TAG=$KO_VERSION#g" $KO_BASE/kubeoperator/kubeoperator.conf
       sed -i -e "s#OS_ARCH=.*#OS_ARCH=$architecture#g" $KO_BASE/kubeoperator/kubeoperator.conf
   fi
-  sed -i -e "1,10s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/koctl
+  sed -i -e "1,20s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/koctl
   \cp -rfp  $KO_BASE/kubeoperator/koctl /usr/local/bin/
 }
 
