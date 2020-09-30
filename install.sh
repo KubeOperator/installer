@@ -78,7 +78,7 @@ function set_dir() {
 
 # 解压离线文件
 function unarchive() {
-  colorMsg $yellow "开始解压离线包 ..."
+  log "... 开始解压离线包"
   if [ -d ${CURRENT_DIR}/docker ];then
   # 离线安装
       \cp -rfp ${CURRENT_DIR}/kubeoperator $KO_BASE
