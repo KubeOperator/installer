@@ -88,10 +88,10 @@ function unarchive() {
   # 在线安装
       \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/installer/kubeoperator $KO_BASE
       \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/installer/koctl $KO_BASE/kubeoperator
-      log "解压 ansible "
+      log "... 解压 ansible "
       tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ansible-${KO_VERSION}.tar.gz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION} > /dev/null 2>&1
       \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
-      log "解压 nexus "
+      log "... 解压 nexus "
       tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/nexus-${KO_VERSION}.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
       sed -i -e "s#KO_TAG=.*#KO_TAG=$KO_VERSION#g" $KO_BASE/kubeoperator/kubeoperator.conf
       sed -i -e "s#OS_ARCH=.*#OS_ARCH=$architecture#g" $KO_BASE/kubeoperator/kubeoperator.conf
@@ -141,12 +141,12 @@ EOF
 # 检测 docker 是否存在
 function install_docker() {
   if which docker docker-compose ;then
-    log "docker 已经安装，跳过安装步骤"
+    log "... docker 已经安装，跳过安装步骤"
     config_docker
     if systemctl status docker|grep running;then
-      log "docker 运行正常"
+      log "... docker 运行正常"
     else
-      log "docker 已经安装，跳过安装步骤"
+      log "... docker 已经安装，跳过安装步骤"
     fi
   else
    if [[ -d docker ]]; then
@@ -199,7 +199,7 @@ function load_image() {
 
 # 启动 kubeoperator
 function ko_start() {
-  log "开始启动 KubeOperator"
+  log "... 开始启动 KubeOperator"
     cd  $KO_BASE/kubeoperator/ && docker-compose up -d 2>&1 | tee -a ${CURRENT_DIR}/install.log
     sleep 15s
   while [ $(docker ps -a|grep kubeoperator|wc -l) -lt 9 ]
