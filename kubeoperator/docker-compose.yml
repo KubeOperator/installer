@@ -68,8 +68,7 @@ services:
       timeout: 10s
       retries: 30
     depends_on:
-      server:
-        condition: service_healthy
+      - server
 
   mysql:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/mysql-server:8.0.21-${OS_ARCH}
