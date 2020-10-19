@@ -109,6 +109,11 @@ function ko_config() {
 
 # 配置docker，私有 docker 仓库授信
 function config_docker() {
+  if [ $(getenforce) == "Enforcing" ];then
+    log  "... 关闭 SELINUX"
+    setenforce 0
+    sed -i "s/SELINUX=enforcing/SELINUX=disabled/g" /etc/selinux/config
+  fi
   log  "... 关闭 Firewalld"
   systemctl stop firewalld | tee -a ${CURRENT_DIR}/install.log
   systemctl disable firewalld | tee -a ${CURRENT_DIR}/install.log
