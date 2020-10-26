@@ -1,12 +1,10 @@
 #!/bin/bash
 action=$1
 target=$2
-args=$@
 
 red=31
 green=32
 yellow=33
-blue=34
 
 KO_BASE=/opt
 CWD=$(pwd)
@@ -15,7 +13,6 @@ BACKUP_FILE=${BACKUP_DIR}/kubeoperator-backup-`date +%F_%T`.tar.gz
 set -e
 
 export COMPOSE_HTTP_TIMEOUT=180
-export LATEST_KO_VERSION=$(curl -s https://github.com/KubeOperator/KubeOperator/releases/latest/download 2>&1 |grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
 export CURRENT_KO_VERSION=`cat ${KO_BASE}/kubeoperator/kubeoperator.conf|grep KO_TAG|awk -F= '{print $2}'`
 export OFFLINE_KO_VERSION=$(pwd|grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
 
@@ -113,7 +110,7 @@ function backup() {
   koctl stop
   mkdir -p $BACKUP_DIR
   cd ${KO_BASE}
-  colorMsg $yellow "... 开始备份,数据文件较大，请耐心等待，保存终端在线" | tee -a ${CWD}/upgrade.log
+  colorMsg $yellow "... 开始备份,数据文件较大，请耐心等待，保持终端在线" | tee -a ${CWD}/upgrade.log
   sleep 5s
   if tar zcvf $BACKUP_FILE kubeoperator 1>/dev/null;then
   koctl start
@@ -166,6 +163,7 @@ function upgrade() {
        colorMsg $green "升级完成，当前版本: $OFFLINE_KO_VERSION" | tee -a ${CWD}/upgrade.log
     else
     colorMsg $yellow "\n 提示:在线升级请确保当前主机可以正常连接互联网,升级前会先停止KubeOperator服务" | tee -a ${CWD}/upgrade.log
+    export LATEST_KO_VERSION=$(curl -s https://github.com/KubeOperator/KubeOperator/releases/latest/download 2>&1 |grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
     if [ ! -z `echo ${target}|grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}"` ];then
        LATEST_KO_VERSION=${target}
     fi
