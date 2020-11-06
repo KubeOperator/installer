@@ -124,3 +124,8 @@ services:
       - 8083:8083
     volumes:
       - ./data/nexus-data/:/nexus-data
+    healthcheck:
+      test: ["CMD","curl","localhost:8081"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
