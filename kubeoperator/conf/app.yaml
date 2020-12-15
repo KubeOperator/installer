@@ -12,6 +12,8 @@ db:
 jwt:
   secret: iXDgDaEYBzIzustW
   exp: 480
+job:
+  timeout: 60
 kobe:
   host: kobe
   port: 8080
