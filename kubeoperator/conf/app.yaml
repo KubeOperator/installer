@@ -30,3 +30,5 @@ webkubectl:
   port: 8080
 cron:
   enable: true
+encrypt:
+  key: KubeOperator@202
