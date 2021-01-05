@@ -31,6 +31,7 @@ services:
   kobe:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kobe:${KO_TAG}-${OS_ARCH}
     volumes:
+      - ./conf/kobe.yml:/etc/kobe/app.yml
       - ./data/kobe:/var/kobe/data
       - ./data/backup:/var/ko/data/backup
     restart: always

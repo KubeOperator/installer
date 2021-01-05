@@ -1,0 +1,10 @@
+server:
+  host: 0.0.0.0
+  port: 8080
+app:
+  worker: 10
+  queue: 2000
+
+ansible:
+  timeout: 10
+  forks: 20
