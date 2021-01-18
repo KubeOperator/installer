@@ -84,7 +84,7 @@ services:
     env_file:
       - ./conf/mysql.env
     volumes:
-      - ./conf/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./conf/my.cnf:/etc/my.cnf
       - ./conf/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./data/mysql:/var/lib/mysql
 
