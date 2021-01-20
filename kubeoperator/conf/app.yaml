@@ -7,7 +7,6 @@ db:
   host: mysql
   port: 3306
   user: root
-  password: KubeOperator123@mysql
   name: ko
 jwt:
   secret: iXDgDaEYBzIzustW

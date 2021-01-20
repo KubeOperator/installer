@@ -19,6 +19,8 @@ services:
       - ./data/backup:/var/ko/data/backup
       - ./data/ko:/var/ko/data
     restart: always
+    environment:
+      KO_DB_PASSWORD: ${PASSWORD}
     healthcheck:
       test: ["CMD","curl","-f","http://localhost:8080/api/v1/health"]
       interval: 10s
@@ -81,8 +83,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 20
-    env_file:
-      - ./conf/mysql.env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${PASSWORD}
     volumes:
       - ./conf/my.cnf:/etc/my.cnf
       - ./conf/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -94,6 +96,8 @@ services:
     restart: always
     env_file:
       - ./conf/grafana.env
+    environment:
+      GF_DATABASE_PASSWORD: ${PASSWORD}
     volumes:
       - ./conf/grafana.ini:/etc/grafana/grafana.ini
     healthcheck:
