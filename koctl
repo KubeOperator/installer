@@ -161,7 +161,7 @@ function upgrade() {
        \cp -rf $CWD/kubeoperator/docker-compose.yml $KO_BASE/kubeoperator | tee -a ${CWD}/upgrade.log
        \cp -rf $CWD/kubeoperator/data/kobe/project/ko/* $KO_BASE/kubeoperator/data/kobe/project/ko
        sed -i -e "s#KO_TAG=.*#KO_TAG=$OFFLINE_KO_VERSION#g" $KO_BASE/kubeoperator/kubeoperator.conf | tee -a ${CWD}/upgrade.log
-       koctl start
+       $CWD/koctl start
        colorMsg $green "升级完成，当前版本: $OFFLINE_KO_VERSION" | tee -a ${CWD}/upgrade.log
     else
     colorMsg $yellow "\n 提示:在线升级请确保当前主机可以正常连接互联网,升级前会先停止KubeOperator服务" | tee -a ${CWD}/upgrade.log
@@ -193,9 +193,9 @@ function upgrade() {
           \cp -rf $dir_name/installer/kubeoperator/conf/* $KO_BASE/kubeoperator/conf/ | tee -a ${CWD}/upgrade.log
           \cp -rf $dir_name/installer/kubeoperator/docker-compose.yml $KO_BASE/kubeoperator/ | tee -a ${CWD}/upgrade.log
           colorMsg $yellow " ... 拉取镜像" | tee -a ${CWD}/upgrade.log
-          koctl pull | tee -a ${CWD}/upgrade.log
-          koctl start | tee -a ${CWD}/upgrade.log
-          koctl status | tee -a ${CWD}/upgrade.log
+          $CWD/koctl pull | tee -a ${CWD}/upgrade.log
+          $CWD/koctl start | tee -a ${CWD}/upgrade.log
+          $CWD/koctl status | tee -a ${CWD}/upgrade.log
           if [ $(docker ps -a|grep kubeoperator|wc -l) -gt 0 ] && [ $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|wc -l) -eq 0 ];then
             colorMsg $green "升级完成，当前版本: $LATEST_KO_VERSION" | tee -a ${CWD}/upgrade.log
           else
