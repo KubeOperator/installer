@@ -10,7 +10,6 @@ KO_BASE=/opt
 CWD=$(pwd)
 BACKUP_DIR=${KO_BASE}/kubeoperator_backup
 BACKUP_FILE=${BACKUP_DIR}/kubeoperator-backup-`date +%F_%T`.tar.gz
-GETPASSWORD=`cat ${KO_BASE}/kubeoperator/conf/mysql.env |grep MYSQL_ROOT_PASSWORD|sed 's/MYSQL_ROOT_PASSWORD=//g'|base64 -d`
 set -e
 
 export COMPOSE_HTTP_TIMEOUT=180
@@ -45,15 +44,15 @@ function colorMsg() {
 
 function status() {
    echo
-   cd ${KO_BASE}/kubeoperator; PASSWORD=${GETPASSWORD} docker-compose ps
+   cd ${KO_BASE}/kubeoperator; docker-compose ps
 }
 function start() {
    colorMsg $green "[Starting KubeOperator]"
-   cd ${KO_BASE}/kubeoperator; PASSWORD=${GETPASSWORD} docker-compose up -d  ${target}
+   cd ${KO_BASE}/kubeoperator; docker-compose up -d  ${target}
 }
 function stop() {
    colorMsg $green "[Stopping KubeOperator]"
-   cd ${KO_BASE}/kubeoperator; PASSWORD=${GETPASSWORD} docker-compose down ${target}
+   cd ${KO_BASE}/kubeoperator; docker-compose down ${target}
 }
 function restart() {
    stop
@@ -61,15 +60,15 @@ function restart() {
 }
 function reload() {
    echo
-   cd ${KO_BASE}/kubeoperator; PASSWORD=${GETPASSWORD} docker-compose up -d ${target}
+   cd ${KO_BASE}/kubeoperator; docker-compose up -d ${target}
 }
 function logs() {
    echo
-   cd ${KO_BASE}/kubeoperator; PASSWORD=${GETPASSWORD} docker-compose logs ${target}
+   cd ${KO_BASE}/kubeoperator; docker-compose logs ${target}
 }
 function pull() {
    echo
-   cd ${KO_BASE}/kubeoperator; PASSWORD=${GETPASSWORD} docker-compose pull ${target}
+   cd ${KO_BASE}/kubeoperator; docker-compose pull ${target}
 }
 function version() {
    echo  "$CURRENT_KO_VERSION"
@@ -87,7 +86,7 @@ function remove_service() {
       read -p "卸载将会完全清除 KubeOperator 的所有容器和数据，是否继续 [y/n] : " yn
       if [ "$yn" == "Y" ] || [ "$yn" == "y" ]; then
       echo -e "停止 KubeOperator 服务进程"
-      cd ${KO_BASE}/kubeoperator && PASSWORD=${GETPASSWORD} docker-composedown -v
+      cd ${KO_BASE}/kubeoperator && docker-compose down -v
       rm -rf /usr/local/bin/koctl
       else
       exit 0
