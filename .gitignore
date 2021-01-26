@@ -1,1 +1,4 @@
 .idea/*
+.DS_Store
+kubeoperator/.DS_Store
+kubeoperator/*/.DS_Store
