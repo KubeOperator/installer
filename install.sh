@@ -17,7 +17,6 @@ else
   colorMsg $red "暂不支持的系统架构，请参阅官方文档，选择受支持的系统"
 fi
 
-
 if [ "$architecture" == "arm64" ];then
   docker_compose_version="1.22.0"
 else
@@ -26,6 +25,7 @@ fi
 docker_version="19.03.9"
 docker_download_url="https://kubeoperator.fit2cloud.com/docker/$docker_version/$architecture/docker-$docker_version.tgz"
 docker_compose_download_url="https://kubeoperator.fit2cloud.com/docker-compose/$architecture/$docker_compose_version/docker-compose"
+mysql_download_url="https://kubeoperator.fit2cloud.com/mysql/$architecture/mysql.tar.gz"
 
 function colorMsg()
 {
@@ -57,7 +57,6 @@ if [ ! $CURRENT_DIR ];then
   CURRENT_DIR=$(cd "$(dirname "$0")";pwd)
 fi
 
-
 # 配置 kubeoperator
 function set_dir() {
   if read -t 120 -p "设置KubeOperator安装目录,默认/opt: " KO_BASE;then
@@ -78,14 +77,16 @@ function set_dir() {
 
 # 解压离线文件
 function unarchive() {
-  log "... 开始解压离线包"
   if [ -d ${CURRENT_DIR}/docker ];then
-  # 离线安装
+      # 离线安装
+      log "... 解压离线包"
       \cp -rfp ${CURRENT_DIR}/kubeoperator $KO_BASE
       \cp -rfp ${CURRENT_DIR}/koctl $KO_BASE/kubeoperator
       tar zxvf ${CURRENT_DIR}/nexus-data.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
+      log "... 解压 mysql 初始化文件"
+      tar zxvf ${CURRENT_DIR}/mysql.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
   else
-  # 在线安装
+      # 在线安装
       \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/installer/kubeoperator $KO_BASE
       \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/installer/koctl $KO_BASE/kubeoperator
       log "... 解压 ansible "
@@ -95,7 +96,14 @@ function unarchive() {
       tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/nexus-${KO_VERSION}.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
       sed -i -e "s#KO_TAG=.*#KO_TAG=$KO_VERSION#g" $KO_BASE/kubeoperator/kubeoperator.conf
       sed -i -e "s#OS_ARCH=.*#OS_ARCH=$architecture#g" $KO_BASE/kubeoperator/kubeoperator.conf
+      log "... 下载、解压 mysql 初始化文件"
+      wget --no-check-certificate $mysql_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ | tee -a ${CURRENT_DIR}/install.log
+      tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/mysql.tar.gz -C $KO_BASE/kubeoperator/data/ | tee -a ${CURRENT_DIR}/install.log
   fi
+  log "... 创建 grafana 持久化目录"
+  mkdir -p $KO_BASE/kubeoperator/data/grafana
+  chown -R 472:472 $KO_BASE/kubeoperator/data/grafana
+  # 拷贝 koctl 可执行文件
   sed -i -e "1,20s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/koctl
   \cp -rfp  $KO_BASE/kubeoperator/koctl /usr/local/bin/
 }
@@ -183,8 +191,6 @@ function install_docker() {
    fi
   fi
 }
-
-
 
 # 加载镜像
 function load_image() {
