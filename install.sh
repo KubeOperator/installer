@@ -102,7 +102,7 @@ function unarchive() {
   fi
   log "... 创建 grafana 持久化目录"
   mkdir -p $KO_BASE/kubeoperator/data/grafana
-  chown -R 472:472 $KO_BASE/kubeoperator/data/grafana
+  sudo chown -R 472:472 $KO_BASE/kubeoperator/data/grafana
   # 拷贝 koctl 可执行文件
   sed -i -e "1,20s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/koctl
   \cp -rfp  $KO_BASE/kubeoperator/koctl /usr/local/bin/
@@ -166,8 +166,8 @@ function install_docker() {
       log "... 离线安装 docker"
       cp docker/bin/* /usr/bin/
       cp docker/service/docker.service /etc/systemd/system/
-      chmod +x /usr/bin/docker*
-      chmod 754 /etc/systemd/system/docker.service
+      sudo chmod +x /usr/bin/docker*
+      sudo chmod 754 /etc/systemd/system/docker.service
       log "... 配置 docker"
       config_docker
       log "... 启动 docker"
@@ -210,6 +210,8 @@ function load_image() {
 
 # 启动 kubeoperator
 function ko_start() {
+  # 设置 app.yaml 配置文件权限
+  sudo chmod 600 $KO_BASE/kubeoperator/conf/app.yaml
   log "... 开始启动 KubeOperator"
     cd  $KO_BASE/kubeoperator/ && docker-compose up -d 2>&1 | tee -a ${CURRENT_DIR}/install.log
     sleep 15s
