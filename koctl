@@ -2,12 +2,11 @@
 
 action=$1
 target=$2
-
-set -e
 KO_BASE=/opt
+set -e
 
 if [[ "${action}" == "upgrade" ]];then
-  export  KO_BASE=`head -10 $(which koctl)|grep KO_BASE=|awk -F= '{print $2}'`
+  export  KO_BASE=`head -6 $(which koctl)|grep KO_BASE=|awk -F= '{print $2}'`
   if [[ ${KO_BASE} == "" ]];then
     echo "获取KubeOperator安装路径失败，请确认安装路径后检查 $(which koctl)，KO_BASE 参数是否正确"
     exit 0
@@ -15,14 +14,25 @@ if [[ "${action}" == "upgrade" ]];then
   if [[ -f $(pwd)/kubeoperator/scripts/const.sh ]];then
   sed -i -e "1,10s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $(pwd)/kubeoperator/scripts/const.sh | tee -a ${CWD}/upgrade.log
   else
-    echo "在线升级默认升级到最新版本"
+    echo "开始在线升级"
   fi
 fi
 
 if [[ -f ${KO_BASE}/kubeoperator/scripts/const.sh ]];then
   source ${KO_BASE}/kubeoperator/scripts/const.sh
-else
+elif [ -f $(pwd)/kubeoperator/scripts/const.sh ]; then
   source $(pwd)/kubeoperator/scripts/const.sh
+else
+  export LATEST_KO_VERSION=$(curl -s https://github.com/KubeOperator/KubeOperator/releases/latest/download 2>&1 |grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
+  if [ ! -z `echo ${target}|grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}"` ];then
+   LATEST_KO_VERSION=${target}
+  fi
+  export KO_INSTALL_URL="https://github.com/KubeOperator/KubeOperator/releases/download/${LATEST_KO_VERSION}/installer-${LATEST_KO_VERSION}.tar.gz"
+  wget --no-check-certificate "${KO_INSTALL_URL}" -P $(pwd) | tee -a ${CWD}/upgrade.log
+  tar zxvf $(pwd)/installer-${LATEST_KO_VERSION}.tar.gz -C $(pwd) > /dev/null 2>&1 | tee -a ${CWD}/upgrade.log
+  mkdir -p "${KO_BASE}/kubeoperator/scripts"
+  \cp -rp $(pwd)/installer/kubeoperator/scripts/*  ${KO_BASE}/kubeoperator/scripts
+  source $(pwd)/installer/kubeoperator/scripts/const.sh
 fi
 
 function usage() {
@@ -108,13 +118,17 @@ function main() {
          logs
          ;;
       upgrade)
-         bash "$(pwd)/kubeoperator/scripts/upgrade.sh"
+        if [ -f $(pwd)/kubeoperator/scripts/upgrade.sh ];then
+         bash "$(pwd)/kubeoperator/scripts/upgrade.sh" ${target}
+        elif [ -f ${KO_BASE}/kubeoperator/scripts/upgrade.sh  ]; then
+         bash "${KO_BASE}/kubeoperator/scripts/upgrade.sh" ${target}
+        fi
          ;;
       backup)
-         bash "$(pwd)/kubeoperator/scripts/backup.sh"
+         bash "${KO_BASE}/kubeoperator/scripts/backup.sh"
          ;;
       restore)
-         bash "$(pwd)/kubeoperator/scripts/restore.sh"
+         bash "${KO_BASE}/kubeoperator/scripts/restore.sh"
          ;;
       help)
          usage
