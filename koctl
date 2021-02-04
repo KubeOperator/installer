@@ -3,10 +3,11 @@
 action=$1
 target=$2
 KO_BASE=/opt
+
 set -e
 
 if [[ "${action}" == "upgrade" ]];then
-  export  KO_BASE=`head -6 $(which koctl)|grep KO_BASE=|awk -F= '{print $2}'`
+  export  KO_BASE=`head -9 $(which koctl)|grep KO_BASE=|awk -F= '{print $2}'`
   if [[ ${KO_BASE} == "" ]];then
     echo "获取KubeOperator安装路径失败，请确认安装路径后检查 $(which koctl)，KO_BASE 参数是否正确"
     exit 0
@@ -120,11 +121,11 @@ function main() {
          logs
          ;;
       upgrade)
-        if [ -f $(pwd)/kubeoperator/scripts/upgrade.sh ];then
-         bash "$(pwd)/kubeoperator/scripts/upgrade.sh" ${target}
-        elif [ -f ${KO_BASE}/kubeoperator/scripts/upgrade.sh  ]; then
-         bash "${KO_BASE}/kubeoperator/scripts/upgrade.sh" ${target}
-        fi
+         if [ -f $(pwd)/kubeoperator/scripts/upgrade.sh ]; then
+          bash "$(pwd)/kubeoperator/scripts/upgrade.sh" ${target}
+         elif [ -f ${KO_BASE}/kubeoperator/scripts/upgrade.sh ]; then
+          bash "${KO_BASE}/kubeoperator/scripts/upgrade.sh" ${target}
+         fi
          ;;
       backup)
          bash "${KO_BASE}/kubeoperator/scripts/backup.sh"
