@@ -38,7 +38,7 @@ wget --no-check-certificate $kubeoperator_download_url -P ${CURRENT_DIR}/kubeope
 
 # 解压离线包
 if [ -f ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/installer-${KO_VERSION}.tar.gz ];then
-  tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/installer-${KO_VERSION}.tar.gz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}> /dev/null 2>&1
+  tar zxf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/installer-${KO_VERSION}.tar.gz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}
 fi
 
 if [ -d ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/installer ];then

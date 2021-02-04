@@ -27,7 +27,7 @@ function online_upgrade() {
           wget --no-check-certificate "${KO_ANSIBLE_URL}" -P $dir_name| tee -a ${CWD}/upgrade.log
           wget --no-check-certificate "${KO_NEXUS_URL}" -P $dir_name| tee -a ${CWD}/upgrade.log
           # untar
-          tar zxvf $dir_name/installer-${LATEST_KO_VERSION}.tar.gz -C $dir_name 1>/dev/null| tee -a ${CWD}/upgrade.log
+          tar zxf $dir_name/installer-${LATEST_KO_VERSION}.tar.gz -C $dir_name | tee -a ${CWD}/upgrade.log
           # 创建 grafana 持久化目录
           if [[ ! -d $KO_BASE/kubeoperator/data/grafana ]];then
             mkdir -p $KO_BASE/kubeoperator/data/grafana
@@ -38,8 +38,8 @@ function online_upgrade() {
             sudo chown -R 472:472 "${KO_BASE}/kubeoperator/data/grafana" | tee -a ${CWD}/upgrade.log
           fi
           rm -rf  $KO_BASE/kubeoperator/data/nexus-data
-          tar zxvf $dir_name/nexus-${LATEST_KO_VERSION}.tar.gz -C $KO_BASE/kubeoperator/data 1>/dev/null | tee -a ${CWD}/upgrade.log
-          tar zxvf $dir_name/ansible-${LATEST_KO_VERSION}.tar.gz -C $dir_name 1>/dev/null | tee -a ${CWD}/upgrade.log
+          tar zxf $dir_name/nexus-${LATEST_KO_VERSION}.tar.gz -C $KO_BASE/kubeoperator/data | tee -a ${CWD}/upgrade.log
+          tar zxf $dir_name/ansible-${LATEST_KO_VERSION}.tar.gz -C $dir_name  | tee -a ${CWD}/upgrade.log
           sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $dir_name/installer/koctl | tee -a ${CWD}/upgrade.log
           # copy
           \cp -rf $dir_name/ansible/* $KO_BASE/kubeoperator/data/kobe/project/ko | tee -a ${CWD}/upgrade.log
@@ -86,7 +86,7 @@ function offline_upgrade() {
        sudo chown -R 472:472 "${KO_BASE}/kubeoperator/data/grafana" | tee -a ${CWD}/upgrade.log
      fi
      rm -rf  $KO_BASE/kubeoperator/data/nexus-data
-     tar zxvf ${CWD}/nexus-data.tar.gz -C $KO_BASE/kubeoperator/data 1>/dev/null | tee -a ${CWD}/upgrade.log
+     tar zxf ${CWD}/nexus-data.tar.gz -C $KO_BASE/kubeoperator/data | tee -a ${CWD}/upgrade.log
      rm -rf $KO_BASE/kubeoperator/data/kobe/project/ko/*
      # 删除老版本遗留文件
      if [[ -d $KO_BASE/kubeoperator/conf/my.cnf ]]; then
@@ -114,7 +114,7 @@ function main() {
     upgrade_init
     if read -p "是否执行备份，(若已经备份成功可跳过此步骤) [y/n]: " yn;then
       if [ "$yn" == "Y" ] || [ "$yn" == "y" ];then
-        backup | tee -a ${CWD}/upgrade.log
+        koctl backup | tee -a ${CWD}/upgrade.log
       else
         echo "... 跳过备份" | tee -a ${CWD}/upgrade.log
       fi

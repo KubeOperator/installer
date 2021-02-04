@@ -30,7 +30,7 @@ else
   fi
   export KO_INSTALL_URL="https://github.com/KubeOperator/KubeOperator/releases/download/${LATEST_KO_VERSION}/installer-${LATEST_KO_VERSION}.tar.gz"
   wget --no-check-certificate "${KO_INSTALL_URL}" -P $(pwd) | tee -a ${CWD}/upgrade.log
-  tar zxvf $(pwd)/installer-${LATEST_KO_VERSION}.tar.gz -C $(pwd) > /dev/null 2>&1 | tee -a ${CWD}/upgrade.log
+  tar zxf $(pwd)/installer-${LATEST_KO_VERSION}.tar.gz -C $(pwd) > /dev/null 2>&1 | tee -a ${CWD}/upgrade.log
   mkdir -p "${KO_BASE}/kubeoperator/scripts"
   \cp -rp $(pwd)/installer/kubeoperator/scripts/*  ${KO_BASE}/kubeoperator/scripts
   source $(pwd)/installer/kubeoperator/scripts/const.sh
@@ -109,7 +109,7 @@ function main() {
          reload
          ;;
       uninstall)
-         bash "${KO_BASE}/kubeoperator/scripts/uninstall.sh"
+         bash "${KO_BASE}/kubeoperator/scripts/uninstall.sh" ${target}
          ;;
       version)
          version
@@ -131,7 +131,7 @@ function main() {
          bash "${KO_BASE}/kubeoperator/scripts/backup.sh"
          ;;
       restore)
-         bash "${KO_BASE}/kubeoperator/scripts/restore.sh"
+         bash "${KO_BASE}/kubeoperator/scripts/restore.sh" ${target}
          ;;
       help)
          usage
