@@ -27,6 +27,7 @@ function online_upgrade() {
           wget --no-check-certificate "${KO_ANSIBLE_URL}" -P $dir_name| tee -a ${CWD}/upgrade.log
           wget --no-check-certificate "${KO_NEXUS_URL}" -P $dir_name| tee -a ${CWD}/upgrade.log
           # untar
+          colorMsg $yellow "... 解压installer安装包"
           tar zxvf $dir_name/installer-${LATEST_KO_VERSION}.tar.gz -C $dir_name > /dev/null 2>&1| tee -a ${CWD}/upgrade.log
           # 创建 grafana 持久化目录
           if [[ ! -d $KO_BASE/kubeoperator/data/grafana ]];then
@@ -34,15 +35,17 @@ function online_upgrade() {
             sudo chown -R 472:472 "${KO_BASE}/kubeoperator/data/grafana" | tee -a ${CWD}/upgrade.log
           fi
           rm -rf  $KO_BASE/kubeoperator/data/nexus-data
-          tar zxvf $dir_name/nexus-${LATEST_KO_VERSION}.tar.gz -C $KO_BASE/kubeoperator/data | tee -a ${CWD}/upgrade.log
-          tar zxvf $dir_name/ansible-${LATEST_KO_VERSION}.tar.gz -C $dir_name | tee -a ${CWD}/upgrade.log
+          colorMsg $yellow "... 解压nexus离线包"
+          tar zxvf $dir_name/nexus-${LATEST_KO_VERSION}.tar.gz -C $KO_BASE/kubeoperator/data > /dev/null 2>&1 | tee -a ${CWD}/upgrade.log
+          colorMsg $yellow "... 解压ansible离线包"
+          tar zxvf $dir_name/ansible-${LATEST_KO_VERSION}.tar.gz -C $dir_name > /dev/null 2>&1 | tee -a ${CWD}/upgrade.log
           sed -i -e "1,10s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $dir_name/installer/koctl | tee -a ${CWD}/upgrade.log
           # copy
           \cp -rf $dir_name/ansible/* $KO_BASE/kubeoperator/data/kobe/project/ko | tee -a ${CWD}/upgrade.log
           # 删除老版本遗留文件
           if [[ -d $KO_BASE/kubeoperator/conf/my.cnf ]]; then
-            rm -rf $KO_BASE/kubeoperator/conf/my.cnf
-            rm -rf $KO_BASE/kubeoperator/conf/my.conf
+            rm -rf $KO_BASE/kubeoperator/conf/my.cnf | tee -a ${CWD}/upgrade.log
+            rm -rf $KO_BASE/kubeoperator/conf/my.conf | tee -a ${CWD}/upgrade.log
           fi
           \cp -rf $dir_name/installer/kubeoperator/conf/* $KO_BASE/kubeoperator/conf/ | tee -a ${CWD}/upgrade.log
           \cp -rf $dir_name/installer/kubeoperator/docker-compose.yml $KO_BASE/kubeoperator/ | tee -a ${CWD}/upgrade.log
