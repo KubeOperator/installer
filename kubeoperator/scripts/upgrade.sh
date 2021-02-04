@@ -58,7 +58,7 @@ function online_upgrade() {
           if [ $(docker ps -a|grep kubeoperator|wc -l) -gt 0 ] && [ $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|wc -l) -eq 0 ];then
             colorMsg $green "升级完成，当前版本: $LATEST_KO_VERSION" | tee -a ${CWD}/upgrade.log
           else
-            colorMsg $red "升级失败" | tee -a ${CWD}/upgrade.log
+            colorMsg $red "升级失败, 请重新执行升级命令. # koctl upgrade" | tee -a ${CWD}/upgrade.log
           fi
         else
           exit 0
