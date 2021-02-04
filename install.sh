@@ -104,7 +104,7 @@ function unarchive() {
   mkdir -p $KO_BASE/kubeoperator/data/grafana
   sudo chown -R 472:472 $KO_BASE/kubeoperator/data/grafana
   # 拷贝 koctl 可执行文件
-  sed -i -e "1,20s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/koctl
+  sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/koctl
   \cp -rfp  $KO_BASE/kubeoperator/koctl /usr/local/bin/
 }
 

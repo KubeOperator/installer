@@ -40,7 +40,7 @@ function online_upgrade() {
           rm -rf  $KO_BASE/kubeoperator/data/nexus-data
           tar zxvf $dir_name/nexus-${LATEST_KO_VERSION}.tar.gz -C $KO_BASE/kubeoperator/data 1>/dev/null | tee -a ${CWD}/upgrade.log
           tar zxvf $dir_name/ansible-${LATEST_KO_VERSION}.tar.gz -C $dir_name 1>/dev/null | tee -a ${CWD}/upgrade.log
-          sed -i -e "1,10s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $dir_name/installer/koctl | tee -a ${CWD}/upgrade.log
+          sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $dir_name/installer/koctl | tee -a ${CWD}/upgrade.log
           # copy
           \cp -rf $dir_name/ansible/* $KO_BASE/kubeoperator/data/kobe/project/ko | tee -a ${CWD}/upgrade.log
           # 删除老版本遗留文件
@@ -78,7 +78,7 @@ function offline_upgrade() {
         docker load -i $i 2>&1 | tee -a ${CWD}/upgrade.log
      done
      colorMsg $green "... 解压离线包" | tee -a ${CWD}/upgrade.log
-     sed -i -e "1,10s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" ${CWD}/koctl
+     sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" ${CWD}/koctl
      \cp -rf ${CWD}/koctl /usr/local/bin | tee -a ${CWD}/upgrade.log
      # 创建 grafana 持久化目录
      if [[ ! -d $KO_BASE/kubeoperator/data/grafana ]];then

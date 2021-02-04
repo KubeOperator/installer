@@ -13,7 +13,7 @@ if [[ "${action}" == "upgrade" ]];then
     exit 0
   fi
   if [[ -f $(pwd)/kubeoperator/scripts/const.sh ]];then
-  sed -i -e "1,10s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $(pwd)/kubeoperator/scripts/const.sh | tee -a ${CWD}/upgrade.log
+  sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $(pwd)/kubeoperator/scripts/const.sh | tee -a ${CWD}/upgrade.log
   else
     echo "开始在线升级"
   fi
