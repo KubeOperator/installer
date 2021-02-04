@@ -33,6 +33,8 @@ else
   mkdir -p "${KO_BASE}/kubeoperator/scripts"
   \cp -rp $(pwd)/installer/kubeoperator/scripts/*  ${KO_BASE}/kubeoperator/scripts
   source $(pwd)/installer/kubeoperator/scripts/const.sh
+  rm -rf $(pwd)/installer-${LATEST_KO_VERSION}.tar.gz
+  rm -rf $(pwd)/installer
 fi
 
 function usage() {
