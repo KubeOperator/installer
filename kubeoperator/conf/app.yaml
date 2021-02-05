@@ -29,7 +29,6 @@ webkubectl:
 cron:
   enable: true
 encrypt:
-  key: KubeOperator@202
   multilevel:
     enable: true
     secret: WjgBAQEBAQG1bkw4r7ZuaKD1klBxrT+zrRk8KWl+7LE0dli3h+a8gl6er0u8Ks1w
