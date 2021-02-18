@@ -9,6 +9,8 @@ db:
   user: root
   password: U08BAQEBAQHNm6g24wOpMgv34sNpwR5aBVdvFeSE9+6bydHO/WZLvZXlX9rxiY4V
   name: ko
+  max_open_conns: 200
+  max_idle_conns: 10
 jwt:
   secret: iXDgDaEYBzIzustW
   exp: 480
@@ -29,7 +31,6 @@ webkubectl:
 cron:
   enable: true
 encrypt:
-  key: KubeOperator@202
   multilevel:
     enable: true
     secret: WjgBAQEBAQG1bkw4r7ZuaKD1klBxrT+zrRk8KWl+7LE0dli3h+a8gl6er0u8Ks1w
