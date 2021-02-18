@@ -24,10 +24,13 @@ function remove_service() {
     fi
 }
 
+
+
 function remove_images() {
     echo -e "清理镜像中..."
     docker images -q|xargs docker rmi -f 2&> /dev/null
 }
+
 
 function main() {
     remove_service
