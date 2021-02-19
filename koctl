@@ -1,22 +1,42 @@
 #!/bin/bash
+
 action=$1
 target=$2
-
-red=31
-green=32
-yellow=33
-
 KO_BASE=/opt
-CWD=$(pwd)
-BACKUP_DIR=${KO_BASE}/kubeoperator_backup
-BACKUP_FILE=${BACKUP_DIR}/kubeoperator-backup-`date +%F_%T`.tar.gz
-GETPASSWORD=`cat ${KO_BASE}/kubeoperator/conf/mysql.env |grep MYSQL_ROOT_PASSWORD|sed 's/MYSQL_ROOT_PASSWORD=//g'|base64 -d`
+
 set -e
 
-export COMPOSE_HTTP_TIMEOUT=180
-export CURRENT_KO_VERSION=`cat ${KO_BASE}/kubeoperator/kubeoperator.conf|grep KO_TAG|awk -F= '{print $2}'`
-export OFFLINE_KO_VERSION=$(pwd|grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
+if [[ "${action}" == "upgrade" ]];then
+  export  KO_BASE=`head -9 $(which koctl)|grep KO_BASE=|awk -F= '{print $2}'`
+  if [[ ${KO_BASE} == "" ]];then
+    echo "获取KubeOperator安装路径失败，请确认安装路径后检查 $(which koctl)，KO_BASE 参数是否正确"
+    exit 0
+  fi
+  if [[ -f $(pwd)/kubeoperator/scripts/const.sh ]];then
+  sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $(pwd)/kubeoperator/scripts/const.sh | tee -a ${CWD}/upgrade.log
+  else
+    echo "开始在线升级"
+  fi
+fi
 
+if [[ -f ${KO_BASE}/kubeoperator/scripts/const.sh ]];then
+  source ${KO_BASE}/kubeoperator/scripts/const.sh
+elif [ -f $(pwd)/kubeoperator/scripts/const.sh ]; then
+  source $(pwd)/kubeoperator/scripts/const.sh
+else
+  export LATEST_KO_VERSION=$(curl -s https://github.com/KubeOperator/KubeOperator/releases/latest/download 2>&1 |grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
+  if [ ! -z `echo ${target}|grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}"` ];then
+   LATEST_KO_VERSION=${target}
+  fi
+  export KO_INSTALL_URL="https://github.com/KubeOperator/KubeOperator/releases/download/${LATEST_KO_VERSION}/installer-${LATEST_KO_VERSION}.tar.gz"
+  wget --no-check-certificate "${KO_INSTALL_URL}" -P $(pwd) | tee -a ${CWD}/upgrade.log
+  tar zxf $(pwd)/installer-${LATEST_KO_VERSION}.tar.gz -C $(pwd) > /dev/null 2>&1 | tee -a ${CWD}/upgrade.log
+  mkdir -p "${KO_BASE}/kubeoperator/scripts"
+  \cp -rp $(pwd)/installer/kubeoperator/scripts/*  ${KO_BASE}/kubeoperator/scripts
+  source $(pwd)/installer/kubeoperator/scripts/const.sh
+  rm -rf $(pwd)/installer-${LATEST_KO_VERSION}.tar.gz
+  rm -rf $(pwd)/installer
+fi
 
 function usage() {
    echo "KubeOperator 控制脚本"
@@ -39,21 +59,17 @@ function usage() {
    echo "  upgrade   升级 KubeOperator 版本,在线升级默认升级到最新版本，也可指定升级版本，例: koctl upgrade v3.0.1，离线升级请参考官方文档"
 }
 
-function colorMsg() {
-  echo -e "\033[$1m $2 \033[0m"
-}
-
 function status() {
    echo
-   cd ${KO_BASE}/kubeoperator; PASSWORD=${GETPASSWORD} docker-compose ps
+   cd ${KO_BASE}/kubeoperator; docker-compose ps
 }
 function start() {
    colorMsg $green "[Starting KubeOperator]"
-   cd ${KO_BASE}/kubeoperator; PASSWORD=${GETPASSWORD} docker-compose up -d  ${target}
+   cd ${KO_BASE}/kubeoperator; docker-compose up -d  ${target}
 }
 function stop() {
    colorMsg $green "[Stopping KubeOperator]"
-   cd ${KO_BASE}/kubeoperator; PASSWORD=${GETPASSWORD} docker-compose down ${target}
+   cd ${KO_BASE}/kubeoperator; docker-compose down ${target}
 }
 function restart() {
    stop
@@ -61,153 +77,18 @@ function restart() {
 }
 function reload() {
    echo
-   cd ${KO_BASE}/kubeoperator; PASSWORD=${GETPASSWORD} docker-compose up -d ${target}
+   cd ${KO_BASE}/kubeoperator; docker-compose up -d ${target}
 }
 function logs() {
    echo
-   cd ${KO_BASE}/kubeoperator; PASSWORD=${GETPASSWORD} docker-compose logs ${target}
+   cd ${KO_BASE}/kubeoperator; docker-compose logs ${target}
 }
 function pull() {
    echo
-   cd ${KO_BASE}/kubeoperator; PASSWORD=${GETPASSWORD} docker-compose pull ${target}
+   cd ${KO_BASE}/kubeoperator; docker-compose pull ${target}
 }
 function version() {
    echo  "$CURRENT_KO_VERSION"
-}
-
-function success(){
-    echo -e "\033[32m KubeOperator 卸载完成. \033[0m"
-}
-function remove_dir() {
-    echo -e "删除 KubeOperator 工作目录"
-    rm -rf ${KO_BASE}/kubeoperator 2&> /dev/null
-}
-function remove_service() {
-    if [ -a ${KO_BASE}/kubeoperator/docker-compose.yml ]; then
-      read -p "卸载将会完全清除 KubeOperator 的所有容器和数据，是否继续 [y/n] : " yn
-      if [ "$yn" == "Y" ] || [ "$yn" == "y" ]; then
-      echo -e "停止 KubeOperator 服务进程"
-      cd ${KO_BASE}/kubeoperator && PASSWORD=${GETPASSWORD} docker-composedown -v
-      rm -rf /usr/local/bin/koctl
-      else
-      exit 0
-      fi
-    fi
-}
-
-function remove_images() {
-    echo -e "清理镜像中..."
-    docker images -q|xargs docker rmi -f 2&> /dev/null
-}
-
-function uninstall() {
-    remove_service
-    remove_images
-    remove_dir
-    success
-}
-
-function backup() {
-  koctl stop
-  mkdir -p $BACKUP_DIR
-  cd ${KO_BASE}
-  colorMsg $yellow "... 开始备份,数据文件较大，请耐心等待，保持终端在线" | tee -a ${CWD}/upgrade.log
-  sleep 5s
-  if tar zcvf $BACKUP_FILE kubeoperator 1>/dev/null;then
-  koctl start
-  colorMsg $green "备份完成,备份文件存放至: $BACKUP_FILE" | tee -a ${CWD}/upgrade.log
-  else
-  colorMsg $red "备份失败，请重新备份" | tee -a ${CWD}/upgrade.log
-  fi
-}
-
-function restore() {
-  koctl stop| tee -a ${CWD}/upgrade.log
-  mv -n ${KO_BASE}/kubeoperator ${KO_BASE}/kubeoperator-bak | tee -a ${CWD}/upgrade.log
-  colorMsg $yellow "... 开始恢复" | tee -a ${CWD}/upgrade.log
-  tar zxvf $target -C ${KO_BASE}/ 1>/dev/null | tee -a ${CWD}/upgrade.log
-  if [ $? -eq 0 ];then
-    koctl start
-    colorMsg $green "恢复完成" | tee -a ${CWD}/upgrade.log
-  else
-    colorMsg $red "恢复失败，$target 解压异常" | tee -a ${CWD}/upgrade.log
-  fi
-}
-
-function upgrade() {
-    if read -p "是否执行备份，(若已经备份成功可跳过此步骤) [y/n]: " yn;then
-      if [ "$yn" == "Y" ] || [ "$yn" == "y" ];then
-        backup | tee -a ${CWD}/upgrade.log
-      else
-        echo "... 跳过备份" | tee -a ${CWD}/upgrade.log
-      fi
-    fi
-    if [[ -d $CWD/images ]] && [[ -f $CWD/nexus-data.tar.gz ]]; then
-       colorMsg $green "... 停止KubeOperator服务" | tee -a ${CWD}/upgrade.log
-       koctl stop | tee -a ${CWD}/upgrade.log
-       colorMsg $green "... 加载镜像" | tee -a ${CWD}/upgrade.log
-       cd  $CURRENT_DIR
-       for i in $CWD/images/*.tar; do
-           [[ -e "$i" ]] || break
-          docker load -i $i 2>&1 | tee -a ${CWD}/upgrade.log
-       done
-       colorMsg $green "... 解压离线包" | tee -a ${CWD}/upgrade.log
-       sed -i -e "1,20s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $CWD/koctl
-       \cp -rf $CWD/koctl /usr/local/bin | tee -a ${CWD}/upgrade.log
-       rm -rf  $KO_BASE/kubeoperator/data/nexus-data
-       tar zxvf $CWD/nexus-data.tar.gz -C $KO_BASE/kubeoperator/data 1>/dev/null | tee -a ${CWD}/upgrade.log
-       rm -rf $KO_BASE/kubeoperator/data/kobe/project/ko/*
-       \cp -rf $CWD/kubeoperator/conf/* $KO_BASE/kubeoperator/conf/ | tee -a ${CWD}/upgrade.log
-       \cp -rf $CWD/kubeoperator/docker-compose.yml $KO_BASE/kubeoperator | tee -a ${CWD}/upgrade.log
-       \cp -rf $CWD/kubeoperator/data/kobe/project/ko/* $KO_BASE/kubeoperator/data/kobe/project/ko
-       sed -i -e "s#KO_TAG=.*#KO_TAG=$OFFLINE_KO_VERSION#g" $KO_BASE/kubeoperator/kubeoperator.conf | tee -a ${CWD}/upgrade.log
-       $CWD/koctl start
-       colorMsg $green "升级完成，当前版本: $OFFLINE_KO_VERSION" | tee -a ${CWD}/upgrade.log
-    else
-    colorMsg $yellow "\n 提示:在线升级请确保当前主机可以正常连接互联网,升级前会先停止KubeOperator服务" | tee -a ${CWD}/upgrade.log
-    export LATEST_KO_VERSION=$(curl -s https://github.com/KubeOperator/KubeOperator/releases/latest/download 2>&1 |grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
-    if [ ! -z `echo ${target}|grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}"` ];then
-       LATEST_KO_VERSION=${target}
-    fi
-    if read -p  "升级操作将会升级到目标版本: -$LATEST_KO_VERSION,是否继续 [y/n]: " yn;then
-       if [ "$yn" == "Y" ] || [ "$yn" == "y" ] || [ "$target" == "-y" ];then
-          colorMsg $green "... 停止KubeOperator服务" | tee -a ${CWD}/upgrade.log
-          koctl stop
-          sed -i -e "s#KO_TAG=.*#KO_TAG=$LATEST_KO_VERSION#g" $KO_BASE/kubeoperator/kubeoperator.conf | tee -a ${CWD}/upgrade.log
-          dir_name=$CWD/kubeoperator-upgrade-$LATEST_KO_VERSION
-          rm -rf $dir_name | tee -a ${CWD}/upgrade.log
-          mkdir -p $dir_name | tee -a ${CWD}/upgrade.log
-          # download
-          wget --no-check-certificate "https://github.com/KubeOperator/KubeOperator/releases/download/${LATEST_KO_VERSION}/installer-${LATEST_KO_VERSION}.tar.gz" -P $dir_name | tee -a ${CWD}/upgrade.log
-          wget --no-check-certificate "https://github.com/KubeOperator/KubeOperator/releases/download/${LATEST_KO_VERSION}/ansible-${LATEST_KO_VERSION}.tar.gz" -P $dir_name| tee -a ${CWD}/upgrade.log
-          wget --no-check-certificate "https://kubeoperator.fit2cloud.com/nexus/nexus-${LATEST_KO_VERSION}.tar.gz" -P $dir_name| tee -a ${CWD}/upgrade.log
-          # untar
-          tar zxvf $dir_name/installer-${LATEST_KO_VERSION}.tar.gz -C $dir_name| tee -a ${CWD}/upgrade.log
-          \cp -rf $dir_name/installer/koctl /usr/local/bin | tee -a ${CWD}/upgrade.log
-          rm -rf  $KO_BASE/kubeoperator/data/nexus-data
-          tar zxvf $dir_name/nexus-${LATEST_KO_VERSION}.tar.gz -C $KO_BASE/kubeoperator/data | tee -a ${CWD}/upgrade.log
-          tar zxvf $dir_name/ansible-${LATEST_KO_VERSION}.tar.gz -C $dir_name | tee -a ${CWD}/upgrade.log
-          sed -i -e "1,20s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $dir_name/installer/koctl | tee -a ${CWD}/upgrade.log
-          # copy
-          \cp -rf $dir_name/ansible/* $KO_BASE/kubeoperator/data/kobe/project/ko | tee -a ${CWD}/upgrade.log
-          \cp -rf $dir_name/installer/kubeoperator/conf/* $KO_BASE/kubeoperator/conf/ | tee -a ${CWD}/upgrade.log
-          \cp -rf $dir_name/installer/kubeoperator/docker-compose.yml $KO_BASE/kubeoperator/ | tee -a ${CWD}/upgrade.log
-          colorMsg $yellow " ... 拉取镜像" | tee -a ${CWD}/upgrade.log
-          $CWD/koctl pull | tee -a ${CWD}/upgrade.log
-          $CWD/koctl start | tee -a ${CWD}/upgrade.log
-          $CWD/koctl status | tee -a ${CWD}/upgrade.log
-          if [ $(docker ps -a|grep kubeoperator|wc -l) -gt 0 ] && [ $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|wc -l) -eq 0 ];then
-            colorMsg $green "升级完成，当前版本: $LATEST_KO_VERSION" | tee -a ${CWD}/upgrade.log
-          else
-            colorMsg $red "升级失败" | tee -a ${CWD}/upgrade.log
-          fi
-        else
-          exit 0
-       fi
-       else
-          exit 0
-    fi
-    fi
 }
 
 function main() {
@@ -228,7 +109,7 @@ function main() {
          reload
          ;;
       uninstall)
-         uninstall
+         bash "${KO_BASE}/kubeoperator/scripts/uninstall.sh" ${target}
          ;;
       version)
          version
@@ -240,13 +121,17 @@ function main() {
          logs
          ;;
       upgrade)
-         upgrade
+         if [ -f $(pwd)/kubeoperator/scripts/upgrade.sh ]; then
+          bash "$(pwd)/kubeoperator/scripts/upgrade.sh" ${target}
+         elif [ -f ${KO_BASE}/kubeoperator/scripts/upgrade.sh ]; then
+          bash "${KO_BASE}/kubeoperator/scripts/upgrade.sh" ${target}
+         fi
          ;;
       backup)
-         backup
+         bash "${KO_BASE}/kubeoperator/scripts/backup.sh"
          ;;
       restore)
-         restore
+         bash "${KO_BASE}/kubeoperator/scripts/restore.sh" ${target}
          ;;
       help)
          usage

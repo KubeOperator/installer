@@ -19,8 +19,6 @@ services:
       - ./data/backup:/var/ko/data/backup
       - ./data/ko:/var/ko/data
     restart: always
-    environment:
-      KO_DB_PASSWORD: ${PASSWORD}
     healthcheck:
       test: ["CMD","curl","-f","http://localhost:8080/api/v1/health"]
       interval: 10s
@@ -83,31 +81,22 @@ services:
       interval: 10s
       timeout: 10s
       retries: 20
-    environment:
-      MYSQL_ROOT_PASSWORD: ${PASSWORD}
     volumes:
       - ./conf/my.cnf:/etc/my.cnf
-      - ./conf/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./data/mysql:/var/lib/mysql
 
   grafana:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/grafana:7.1.0-${OS_ARCH}
     container_name: kubeoperator_grafana
     restart: always
-    env_file:
-      - ./conf/grafana.env
-    environment:
-      GF_DATABASE_PASSWORD: ${PASSWORD}
     volumes:
       - ./conf/grafana.ini:/etc/grafana/grafana.ini
+      - ./data/grafana:/var/lib/grafana
     healthcheck:
       test: ["CMD","ps", "-ef", "|", "grep", "grafana-server"]
       interval: 10s
       timeout: 10s
       retries: 20
-    depends_on:
-      mysql:
-        condition: service_healthy
 
   webkubectl:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/webkubectl:v2.6.0-${OS_ARCH}

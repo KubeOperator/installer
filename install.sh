@@ -17,7 +17,6 @@ else
   colorMsg $red "暂不支持的系统架构，请参阅官方文档，选择受支持的系统"
 fi
 
-
 if [ "$architecture" == "arm64" ];then
   docker_compose_version="1.22.0"
 else
@@ -26,6 +25,7 @@ fi
 docker_version="19.03.9"
 docker_download_url="https://kubeoperator.fit2cloud.com/docker/$docker_version/$architecture/docker-$docker_version.tgz"
 docker_compose_download_url="https://kubeoperator.fit2cloud.com/docker-compose/$architecture/$docker_compose_version/docker-compose"
+mysql_download_url="https://kubeoperator.fit2cloud.com/mysql/$architecture/mysql.tar.gz"
 
 function colorMsg()
 {
@@ -57,7 +57,6 @@ if [ ! $CURRENT_DIR ];then
   CURRENT_DIR=$(cd "$(dirname "$0")";pwd)
 fi
 
-
 # 配置 kubeoperator
 function set_dir() {
   if read -t 120 -p "设置KubeOperator安装目录,默认/opt: " KO_BASE;then
@@ -78,25 +77,34 @@ function set_dir() {
 
 # 解压离线文件
 function unarchive() {
-  log "... 开始解压离线包"
   if [ -d ${CURRENT_DIR}/docker ];then
-  # 离线安装
+      # 离线安装
+      log "... 解压离线包"
       \cp -rfp ${CURRENT_DIR}/kubeoperator $KO_BASE
       \cp -rfp ${CURRENT_DIR}/koctl $KO_BASE/kubeoperator
-      tar zxvf ${CURRENT_DIR}/nexus-data.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
+      tar zxf ${CURRENT_DIR}/nexus-data.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
+      log "... 解压 mysql 初始化文件"
+      tar zxf ${CURRENT_DIR}/mysql.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
   else
-  # 在线安装
+      # 在线安装
       \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/installer/kubeoperator $KO_BASE
       \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/installer/koctl $KO_BASE/kubeoperator
       log "... 解压 ansible "
-      tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ansible-${KO_VERSION}.tar.gz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION} > /dev/null 2>&1
+      tar zxf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ansible-${KO_VERSION}.tar.gz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION} > /dev/null 2>&1
       \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ansible $KO_BASE/kubeoperator/data/kobe/project/ko
       log "... 解压 nexus "
-      tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/nexus-${KO_VERSION}.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
+      tar zxf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/nexus-${KO_VERSION}.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
       sed -i -e "s#KO_TAG=.*#KO_TAG=$KO_VERSION#g" $KO_BASE/kubeoperator/kubeoperator.conf
       sed -i -e "s#OS_ARCH=.*#OS_ARCH=$architecture#g" $KO_BASE/kubeoperator/kubeoperator.conf
+      log "... 下载、解压 mysql 初始化文件"
+      wget --no-check-certificate $mysql_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ | tee -a ${CURRENT_DIR}/install.log
+      tar zxf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/mysql.tar.gz -C $KO_BASE/kubeoperator/data/ | tee -a ${CURRENT_DIR}/install.log
   fi
-  sed -i -e "1,20s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/koctl
+  log "... 创建 grafana 持久化目录"
+  mkdir -p $KO_BASE/kubeoperator/data/grafana
+  sudo chown -R 472:472 $KO_BASE/kubeoperator/data/grafana
+  # 拷贝 koctl 可执行文件
+  sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/koctl
   \cp -rfp  $KO_BASE/kubeoperator/koctl /usr/local/bin/
 }
 
@@ -158,8 +166,8 @@ function install_docker() {
       log "... 离线安装 docker"
       cp docker/bin/* /usr/bin/
       cp docker/service/docker.service /etc/systemd/system/
-      chmod +x /usr/bin/docker*
-      chmod 754 /etc/systemd/system/docker.service
+      sudo chmod +x /usr/bin/docker*
+      sudo chmod 754 /etc/systemd/system/docker.service
       log "... 配置 docker"
       config_docker
       log "... 启动 docker"
@@ -168,7 +176,7 @@ function install_docker() {
    else
       log "... 在线安装 docker"
       wget --no-check-certificate  $docker_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}| tee -a ${CURRENT_DIR}/install.log
-      tar zxvf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/docker-$docker_version.tgz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ | tee -a ${CURRENT_DIR}/install.log
+      tar zxf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/docker-$docker_version.tgz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ | tee -a ${CURRENT_DIR}/install.log
       \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/docker/* /usr/bin/ | tee -a ${CURRENT_DIR}/install.log
       \cp -rfp $KO_BASE/kubeoperator/conf/docker.service /etc/systemd/system/ | tee -a ${CURRENT_DIR}/install.log
       log "... 在线安装 docker-compose"
@@ -183,8 +191,6 @@ function install_docker() {
    fi
   fi
 }
-
-
 
 # 加载镜像
 function load_image() {
@@ -204,6 +210,8 @@ function load_image() {
 
 # 启动 kubeoperator
 function ko_start() {
+  # 设置 app.yaml 配置文件权限
+  sudo chmod 600 $KO_BASE/kubeoperator/conf/app.yaml
   log "... 开始启动 KubeOperator"
     cd  $KO_BASE/kubeoperator/ && docker-compose up -d 2>&1 | tee -a ${CURRENT_DIR}/install.log
     sleep 15s
