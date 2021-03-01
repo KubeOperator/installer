@@ -22,9 +22,6 @@ kobe:
 kotf:
   host: kotf
   port: 8080
-grafana:
-  host: grafana
-  port: 3000
 webkubectl:
   host: webkubectl
   port: 8080

@@ -100,9 +100,6 @@ function unarchive() {
       wget --no-check-certificate $mysql_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ | tee -a ${CURRENT_DIR}/install.log
       tar zxf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/mysql.tar.gz -C $KO_BASE/kubeoperator/data/ | tee -a ${CURRENT_DIR}/install.log
   fi
-  log "... 创建 grafana 持久化目录"
-  mkdir -p $KO_BASE/kubeoperator/data/grafana
-  sudo chown -R 472:472 $KO_BASE/kubeoperator/data/grafana
   # 拷贝 koctl 可执行文件
   sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/koctl
   \cp -rfp  $KO_BASE/kubeoperator/koctl /usr/local/bin/
