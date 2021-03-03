@@ -100,16 +100,19 @@ function unarchive() {
       wget --no-check-certificate $mysql_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ | tee -a ${CURRENT_DIR}/install.log
       tar zxf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/mysql.tar.gz -C $KO_BASE/kubeoperator/data/ | tee -a ${CURRENT_DIR}/install.log
   fi
-  # 拷贝 koctl 可执行文件
-  sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/koctl
-  \cp -rfp  $KO_BASE/kubeoperator/koctl /usr/local/bin/
 }
 
 function ko_config() {
-   sed -i -e "s#KO_BASE=.*#KO_BASE=$KO_BASE#g" $KO_BASE/kubeoperator/kubeoperator.conf
-   if [ ! -f $KO_BASE/kubeoperator/.env ];then
-     ln -s $KO_BASE/kubeoperator/kubeoperator.conf $KO_BASE/kubeoperator/.env
-   fi
+  # 修改环境变量配置文件
+  sed -i -e "s#KO_BASE=.*#KO_BASE=$KO_BASE#g" $KO_BASE/kubeoperator/kubeoperator.conf
+  if [ ! -f $KO_BASE/kubeoperator/.env ];then
+    ln -s $KO_BASE/kubeoperator/kubeoperator.conf $KO_BASE/kubeoperator/.env
+  fi
+  # 修改 koctl 可执行文件并拷贝到环境变量
+  sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/koctl
+  \cp -rfp  $KO_BASE/kubeoperator/koctl /usr/local/bin/
+  # 修改 const 文件
+  sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/scripts/const.sh
 }
 
 # 配置docker，私有 docker 仓库授信
@@ -212,7 +215,7 @@ function ko_start() {
   log "... 开始启动 KubeOperator"
     cd  $KO_BASE/kubeoperator/ && docker-compose up -d 2>&1 | tee -a ${CURRENT_DIR}/install.log
     sleep 15s
-  while [ $(docker ps -a|grep kubeoperator|wc -l) -lt 9 ]
+  while [ $(docker ps -a|grep kubeoperator|wc -l) -lt 8 ]
   do
     log "... 检测到应用程序未正常运行，尝试重新启动"
     sleep 15s
