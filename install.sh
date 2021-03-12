@@ -227,7 +227,7 @@ function ko_start() {
     echo -e "请开放防火墙或安全组的80,8081-8083端口,通过以下方式访问:\n URL: \033[33m http://\$LOCAL_IP:80\033[0m \n 用户名: \033[${green}m admin \033[0m \n 初始密码: \033[${green}m kubeoperator@admin123 \033[0m" 2>&1 | tee -a ${CURRENT_DIR}/install.log
   else
     colorMsg $red "KubeOperator 服务异常，请检查服务是否启动" | tee -a ${CURRENT_DIR}/install.log
-    cd  $KO_BASE/kubeoperator/ && docker-compose status
+    cd  $KO_BASE/kubeoperator/ && docker-compose ps
   fi
 }
 
