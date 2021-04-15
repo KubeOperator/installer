@@ -1,9 +1,4 @@
 .idea/*
-<<<<<<< Updated upstream
 .DS_Store
 kubeoperator/.DS_Store
 kubeoperator/*/.DS_Store
-=======
-data/mysql
-data/nexus-data
->>>>>>> Stashed changes
