@@ -17,12 +17,8 @@ else
   colorMsg $red "暂不支持的系统架构，请参阅官方文档，选择受支持的系统"
 fi
 
-if [ "$architecture" == "arm64" ];then
-  docker_compose_version="1.22.0"
-else
-  docker_compose_version="1.26.2"
-fi
-docker_version="19.03.9"
+docker_compose_version="1.29.0"
+docker_version="19.03.15"
 docker_download_url="https://kubeoperator.fit2cloud.com/docker/$docker_version/$architecture/docker-$docker_version.tgz"
 docker_compose_download_url="https://kubeoperator.fit2cloud.com/docker-compose/$architecture/$docker_compose_version/docker-compose"
 mysql_download_url="https://kubeoperator.fit2cloud.com/mysql/$architecture/mysql.tar.gz"
