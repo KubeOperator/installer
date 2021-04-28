@@ -2,7 +2,7 @@ version: "2.2"
 services:
 
   ui:
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/ui:${KO_TAG}-${OS_ARCH}
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/neeko:${KO_TAG}-${OS_ARCH}
     container_name: kubeoperator_ui
     restart: always
     healthcheck:
