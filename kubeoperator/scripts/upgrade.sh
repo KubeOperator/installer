@@ -72,7 +72,7 @@ function offline_upgrade() {
      sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" ${CWD}/koctl
      \cp -rf ${CWD}/koctl /usr/local/bin | tee -a ${CWD}/upgrade.log
      rm -rf  $KO_BASE/kubeoperator/data/nexus-data
-     tar zxf ${CWD}/nexus-data.tar.gz -C $KO_BASE/kubeoperator/data | tee -a ${CWD}/upgrade.log
+     dd if=${CWD}/data-nexus |openssl des3 -d -k nexus-data|tar zxf - -C $KO_BASE/kubeoperator/data/
      rm -rf $KO_BASE/kubeoperator/data/kobe/project/ko/*
      # 删除老版本遗留文件
      if [[ -d $KO_BASE/kubeoperator/conf/my.cnf ]]; then
@@ -105,7 +105,7 @@ function main() {
         echo "... 跳过备份" | tee -a ${CWD}/upgrade.log
       fi
     fi
-    if [[ -d ${CWD}/images ]] && [[ -f ${CWD}/nexus-data.tar.gz ]]; then
+    if [[ -d ${CWD}/images ]] && [[ -f ${CWD}/data-nexus ]]; then
           echo "离线安装"
           offline_upgrade
     else

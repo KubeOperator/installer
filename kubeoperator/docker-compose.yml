@@ -37,18 +37,6 @@ services:
       timeout: 10s
       retries: 20
 
-  kotf:
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kotf:${KO_TAG}-${OS_ARCH}
-    container_name: kubeoperator_kotf
-    restart: always
-    volumes:
-      - ./data/kotf:/var/kotf/data
-    healthcheck:
-      test: ["CMD","ps", "-ef", "|", "grep","kotf-server"]
-      interval: 10s
-      timeout: 10s
-      retries: 20
-
   nginx:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/nginx:1.19.9-alpine-${OS_ARCH}
     container_name: kubeoperator_nginx
@@ -78,12 +66,6 @@ services:
     volumes:
       - ./conf/my.cnf:/etc/my.cnf
       - ./data/mysql:/var/lib/mysql
-
-  webkubectl:
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/webkubectl:v2.10.2-${OS_ARCH}
-    container_name: kubeoperator_webkubectl
-    restart: always
-    privileged: true
 
   nexus:
     restart: always

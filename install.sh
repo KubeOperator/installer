@@ -78,7 +78,7 @@ function unarchive() {
       log "... 解压离线包"
       \cp -rfp ${CURRENT_DIR}/kubeoperator $KO_BASE
       \cp -rfp ${CURRENT_DIR}/koctl $KO_BASE/kubeoperator
-      tar zxf ${CURRENT_DIR}/nexus-data.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
+      dd if=${CURRENT_DIR}/data-nexus |openssl des3 -d -k nexus-data|tar zxf - -C $KO_BASE/kubeoperator/data/
       log "... 解压 mysql 初始化文件"
       tar zxf ${CURRENT_DIR}/mysql.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
   else
@@ -211,7 +211,7 @@ function ko_start() {
   log "... 开始启动 KubeOperator"
     cd  $KO_BASE/kubeoperator/ && docker-compose up -d 2>&1 | tee -a ${CURRENT_DIR}/install.log
     sleep 15s
-  while [ $(docker ps -a|grep kubeoperator|wc -l) -lt 8 ]
+  while [ $(docker ps -a|grep kubeoperator|wc -l) -lt 6 ]
   do
     log "... 检测到应用程序未正常运行，尝试重新启动"
     sleep 15s
