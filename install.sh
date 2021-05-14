@@ -78,7 +78,12 @@ function unarchive() {
       log "... 解压离线包"
       \cp -rfp ${CURRENT_DIR}/kubeoperator $KO_BASE
       \cp -rfp ${CURRENT_DIR}/koctl $KO_BASE/kubeoperator
-      dd if=${CURRENT_DIR}/data-nexus |openssl des3 -d -k nexus-data|tar zxf - -C $KO_BASE/kubeoperator/data/
+      if !which unzip;then
+        tar xf ${CURRENT_DIR}/zip.tar
+        rpm -ivh ${CURRENT_DIR}/zip/*.rpm
+      fi
+      rm -rf ${CURRENT_DIR}/zip
+      unzip -P data-nexus -q kubeoperator/data/data-nexus -d $KO_BASE/kubeoperator/data/
       log "... 解压 mysql 初始化文件"
       tar zxf ${CURRENT_DIR}/mysql.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
   else
