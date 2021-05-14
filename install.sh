@@ -78,7 +78,7 @@ function unarchive() {
       log "... 解压离线包"
       \cp -rfp ${CURRENT_DIR}/kubeoperator $KO_BASE
       \cp -rfp ${CURRENT_DIR}/koctl $KO_BASE/kubeoperator
-      if !which unzip;then
+      if ! which unzip;then
         tar xf ${CURRENT_DIR}/zip.tar
         rpm -ivh ${CURRENT_DIR}/zip/*.rpm
       fi
