@@ -84,6 +84,7 @@ function unarchive() {
       fi
       rm -rf ${CURRENT_DIR}/zip
       unzip -P data-nexus -q kubeoperator/data/data-nexus -d $KO_BASE/kubeoperator/data/
+      chown -R 200 $KO_BASE/kubeoperator/data/
       log "... 解压 mysql 初始化文件"
       tar zxf ${CURRENT_DIR}/mysql.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
   else
@@ -199,6 +200,8 @@ function load_image() {
   if [[ -d ${CURRENT_DIR}/images ]]; then
      log "... 加载镜像"
      cd  $CURRENT_DIR
+     unzip -q -P data-nexus images/nexus3:3.30-*.tar -d images/
+     rm -rf images/nexus3:3.30-*.tar
      for i in $(ls images); do
         docker load -i images/$i 2>&1 | tee -a ${CURRENT_DIR}/install.log
      done
