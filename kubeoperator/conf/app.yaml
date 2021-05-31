@@ -3,6 +3,9 @@ bind:
   port: 8080
 logging:
   level: info
+  out_put: fileAndStd
+  max_age: 2592000
+  rotation: 86400
 db:
   host: mysql
   port: 3306
