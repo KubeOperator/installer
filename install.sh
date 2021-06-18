@@ -87,7 +87,9 @@ function unarchive() {
       unzip -P data-nexus -q $KO_BASE/kubeoperator/data/data-nexus -d $KO_BASE/kubeoperator/data/
       rm -rf $KO_BASE/kubeoperator/data/data-nexus
       mv $KO_BASE/kubeoperator/data/nexus-data/nexus3:3.30.1-*.tar ${CURRENT_DIR}/images/
-      chown -R 200 $KO_BASE/kubeoperator/data/
+      chmod +x $KO_BASE/kubeoperator/data/nexus-data/docker-compose
+      mv $KO_BASE/kubeoperator/data/nexus-data/docker-compose ${CURRENT_DIR}/docker/bin
+      chown -R 200 $KO_BASE/kubeoperator/data/nexus-data/
       log "... 解压 mysql 初始化文件"
       tar zxf ${CURRENT_DIR}/mysql.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
   else
