@@ -114,9 +114,9 @@ services:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/nexus3:3.25.0-${OS_ARCH}
     container_name: kubeoperator_nexus
     ports:
-      - 8081:8081
-      - 8082:8082
-      - 8083:8083
+      - ${KO_REPO_PORT}:8081
+      - ${KO_REGISTRY_PORT}:8082
+      - ${KO_REGISTRY_HOSTED_PORT}:8083
     volumes:
       - ./data/nexus-data/:/nexus-data
     healthcheck:
