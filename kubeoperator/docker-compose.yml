@@ -2,7 +2,7 @@ version: "2.2"
 services:
 
   ui:
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/ui:${KO_TAG}-${OS_ARCH}
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/neeko:${KO_TAG}-${OS_ARCH}
     container_name: kubeoperator_ui
     restart: always
     healthcheck:
@@ -84,19 +84,6 @@ services:
     volumes:
       - ./conf/my.cnf:/etc/my.cnf
       - ./data/mysql:/var/lib/mysql
-
-  grafana:
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/grafana:7.1.0-${OS_ARCH}
-    container_name: kubeoperator_grafana
-    restart: always
-    volumes:
-      - ./conf/grafana.ini:/etc/grafana/grafana.ini
-      - ./data/grafana:/var/lib/grafana
-    healthcheck:
-      test: ["CMD","ps", "-ef", "|", "grep", "grafana-server"]
-      interval: 10s
-      timeout: 10s
-      retries: 20
 
   webkubectl:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/webkubectl:v2.6.0-${OS_ARCH}

@@ -17,12 +17,9 @@ else
   colorMsg $red "暂不支持的系统架构，请参阅官方文档，选择受支持的系统"
 fi
 
-if [ "$architecture" == "arm64" ];then
-  docker_compose_version="1.22.0"
-else
-  docker_compose_version="1.26.2"
-fi
-docker_version="19.03.9"
+
+docker_compose_version="1.29.0"
+docker_version="19.03.15"
 docker_download_url="https://kubeoperator.fit2cloud.com/docker/$docker_version/$architecture/docker-$docker_version.tgz"
 docker_compose_download_url="https://kubeoperator.fit2cloud.com/docker-compose/$architecture/$docker_compose_version/docker-compose"
 mysql_download_url="https://kubeoperator.fit2cloud.com/mysql/$architecture/mysql.tar.gz"
@@ -100,19 +97,19 @@ function unarchive() {
       wget --no-check-certificate $mysql_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ | tee -a ${CURRENT_DIR}/install.log
       tar zxf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/mysql.tar.gz -C $KO_BASE/kubeoperator/data/ | tee -a ${CURRENT_DIR}/install.log
   fi
-  log "... 创建 grafana 持久化目录"
-  mkdir -p $KO_BASE/kubeoperator/data/grafana
-  sudo chown -R 472:472 $KO_BASE/kubeoperator/data/grafana
-  # 拷贝 koctl 可执行文件
-  sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/koctl
-  \cp -rfp  $KO_BASE/kubeoperator/koctl /usr/local/bin/
 }
 
 function ko_config() {
-   sed -i -e "s#KO_BASE=.*#KO_BASE=$KO_BASE#g" $KO_BASE/kubeoperator/kubeoperator.conf
-   if [ ! -f $KO_BASE/kubeoperator/.env ];then
-     ln -s $KO_BASE/kubeoperator/kubeoperator.conf $KO_BASE/kubeoperator/.env
-   fi
+  # 修改环境变量配置文件
+  sed -i -e "s#KO_BASE=.*#KO_BASE=$KO_BASE#g" $KO_BASE/kubeoperator/kubeoperator.conf
+  if [ ! -f $KO_BASE/kubeoperator/.env ];then
+    ln -s $KO_BASE/kubeoperator/kubeoperator.conf $KO_BASE/kubeoperator/.env
+  fi
+  # 修改 koctl 可执行文件并拷贝到环境变量
+  sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/koctl
+  \cp -rfp  $KO_BASE/kubeoperator/koctl /usr/local/bin/
+  # 修改 const 文件
+  sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/scripts/const.sh
 }
 
 # 配置docker，私有 docker 仓库授信
@@ -215,7 +212,7 @@ function ko_start() {
   log "... 开始启动 KubeOperator"
     cd  $KO_BASE/kubeoperator/ && docker-compose up -d 2>&1 | tee -a ${CURRENT_DIR}/install.log
     sleep 15s
-  while [ $(docker ps -a|grep kubeoperator|wc -l) -lt 9 ]
+  while [ $(docker ps -a|grep kubeoperator|wc -l) -lt 8 ]
   do
     log "... 检测到应用程序未正常运行，尝试重新启动"
     sleep 15s
@@ -227,7 +224,7 @@ function ko_start() {
     echo -e "请开放防火墙或安全组的80,8081-8083端口,通过以下方式访问:\n URL: \033[33m http://\$LOCAL_IP:80\033[0m \n 用户名: \033[${green}m admin \033[0m \n 初始密码: \033[${green}m kubeoperator@admin123 \033[0m" 2>&1 | tee -a ${CURRENT_DIR}/install.log
   else
     colorMsg $red "KubeOperator 服务异常，请检查服务是否启动" | tee -a ${CURRENT_DIR}/install.log
-    cd  $KO_BASE/kubeoperator/ && docker-compose status
+    cd  $KO_BASE/kubeoperator/ && docker-compose ps
   fi
 }
 

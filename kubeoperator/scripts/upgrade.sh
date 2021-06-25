@@ -28,15 +28,6 @@ function online_upgrade() {
           wget --no-check-certificate "${KO_NEXUS_URL}" -P $dir_name| tee -a ${CWD}/upgrade.log
           # untar
           tar zxf $dir_name/installer-${LATEST_KO_VERSION}.tar.gz -C $dir_name | tee -a ${CWD}/upgrade.log
-          # 创建 grafana 持久化目录
-          if [[ ! -d $KO_BASE/kubeoperator/data/grafana ]];then
-            mkdir -p $KO_BASE/kubeoperator/data/grafana
-            sudo chown -R 472:472 "${KO_BASE}/kubeoperator/data/grafana" | tee -a ${CWD}/upgrade.log
-          fi
-          # 检查 grafana 目录权限
-          if [[ "$(ls -l $KO_BASE/kubeoperator/data/|grep grafana|awk '{print $3}')" != "472" ]];then
-            sudo chown -R 472:472 "${KO_BASE}/kubeoperator/data/grafana" | tee -a ${CWD}/upgrade.log
-          fi
           rm -rf  $KO_BASE/kubeoperator/data/nexus-data
           tar zxf $dir_name/nexus-${LATEST_KO_VERSION}.tar.gz -C $KO_BASE/kubeoperator/data | tee -a ${CWD}/upgrade.log
           tar zxf $dir_name/ansible-${LATEST_KO_VERSION}.tar.gz -C $dir_name  | tee -a ${CWD}/upgrade.log
@@ -80,11 +71,6 @@ function offline_upgrade() {
      colorMsg $green "... 解压离线包" | tee -a ${CWD}/upgrade.log
      sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" ${CWD}/koctl
      \cp -rf ${CWD}/koctl /usr/local/bin | tee -a ${CWD}/upgrade.log
-     # 创建 grafana 持久化目录
-     if [[ ! -d $KO_BASE/kubeoperator/data/grafana ]];then
-       mkdir -p $KO_BASE/kubeoperator/data/grafana
-       sudo chown -R 472:472 "${KO_BASE}/kubeoperator/data/grafana" | tee -a ${CWD}/upgrade.log
-     fi
      rm -rf  $KO_BASE/kubeoperator/data/nexus-data
      tar zxf ${CWD}/nexus-data.tar.gz -C $KO_BASE/kubeoperator/data | tee -a ${CWD}/upgrade.log
      rm -rf $KO_BASE/kubeoperator/data/kobe/project/ko/*
