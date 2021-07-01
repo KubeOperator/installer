@@ -42,6 +42,11 @@ function online_upgrade() {
           \cp -rf $dir_name/installer/kubeoperator/conf/* $KO_BASE/kubeoperator/conf/ | tee -a ${CWD}/upgrade.log
           \cp -rf $dir_name/installer/kubeoperator/docker-compose.yml $KO_BASE/kubeoperator/ | tee -a ${CWD}/upgrade.log
           \cp -rf $dir_name/installer/koctl $KO_BASE/kubeoperator/ | tee -a ${CWD}/upgrade.log
+           # 更新kubeoperator.conf 配置文件
+          sed -i -e "s#KO_TAG=.*#KO_TAG=$OFFLINE_KO_VERSION#g" $dir_name/installer/kubeoperator/kubeoperator.conf | tee -a ${CWD}/upgrade.log
+          sed -i -e "s#KO_BASE=.*#KO_BASE=$KO_BASE#g" $dir_name/installer/kubeoperator/kubeoperator.conf | tee -a ${CWD}/upgrade.log
+          sed -i -e "s#KO_PORT=.*#KO_PORT=$KO_PORT#g" $dir_name/installer/kubeoperator/kubeoperator.conf | tee -a ${CWD}/upgrade.log
+          \cp -rf $dir_name/installer/kubeoperator/kubeoperator.conf ${KO_BASE}/kubeoperator/kubeoperator.conf
           colorMsg $yellow " ... 拉取镜像" | tee -a ${CWD}/upgrade.log
           ${KO_BASE}/kubeoperator/koctl pull | tee -a ${CWD}/upgrade.log
           ${KO_BASE}/kubeoperator/koctl start | tee -a ${CWD}/upgrade.log
@@ -82,7 +87,11 @@ function offline_upgrade() {
      \cp -rf ${CWD}/kubeoperator/conf/* $KO_BASE/kubeoperator/conf/ | tee -a ${CWD}/upgrade.log
      \cp -rf ${CWD}/kubeoperator/docker-compose.yml $KO_BASE/kubeoperator | tee -a ${CWD}/upgrade.log
      \cp -rf ${CWD}/kubeoperator/data/kobe/project/ko/* $KO_BASE/kubeoperator/data/kobe/project/ko
-     sed -i -e "s#KO_TAG=.*#KO_TAG=$OFFLINE_KO_VERSION#g" $KO_BASE/kubeoperator/kubeoperator.conf | tee -a ${CWD}/upgrade.log
+     # 更新kubeoperator.conf 配置文件
+     sed -i -e "s#KO_TAG=.*#KO_TAG=$OFFLINE_KO_VERSION#g" ${CWD}/kubeoperator/kubeoperator.conf | tee -a ${CWD}/upgrade.log
+     sed -i -e "s#KO_BASE=.*#KO_BASE=$KO_BASE#g" ${CWD}/kubeoperator/kubeoperator.conf | tee -a ${CWD}/upgrade.log
+     sed -i -e "s#KO_PORT=.*#KO_PORT=$KO_PORT#g" ${CWD}/kubeoperator/kubeoperator.conf | tee -a ${CWD}/upgrade.log
+     \cp -rf ${CWD}/kubeoperator/kubeoperator.conf ${KO_BASE}/kubeoperator/kubeoperator.conf
      ${CWD}/koctl start
      colorMsg $green "升级完成，当前版本: $OFFLINE_KO_VERSION" | tee -a ${CWD}/upgrade.log
 }
