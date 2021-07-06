@@ -100,9 +100,9 @@ function upgrade_init() {
     if [[ ! -d ${KO_BASE}/kubeoperator/scripts ]];then
       mkdir -p ${KO_BASE}/kubeoperator/scripts
     fi
-  if [[ ! -f ${KO_BASE}/kubeoperator/scripts/const.sh ]];then
-    \cp -rp ${PROJECT_DIR}/* ${KO_BASE}/kubeoperator/scripts/
-  fi
+    if [[ ! -f ${KO_BASE}/kubeoperator/scripts/const.sh ]];then
+      \cp -rp ${PROJECT_DIR}/* ${KO_BASE}/kubeoperator/scripts/
+    fi
 }
 
 function main() {
