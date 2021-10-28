@@ -55,7 +55,7 @@ fi
 
 # 配置 kubeoperator
 function set_dir() {
-  if read -t 120 -p "设置KubeOperator安装目录,默认/opt: " KO_BASE;then
+  if read -t 120 -p "设置 KubeOperator 安装目录,默认/opt: " KO_BASE;then
   if [ "$KO_BASE" != "" ];then
     echo "你选择的安装路径为 $KO_BASE"
     if [ ! -d $KO_BASE ];then
@@ -69,6 +69,23 @@ function set_dir() {
     KO_BASE=/opt
     echo "(设置超时，使用默认安装路径 /opt)"
   fi
+}
+
+function set_ko_server_ip() {
+  if read -t 120 -p "设置 KubeOperator 服务 IP: " KO_SERVER_IP;then
+  if [ "$KO_SERVER_IP" != "" ];then
+    echo "你设置的 KubeOperator 服务 IP 为 $KO_SERVER_IP"
+  else
+    KO_SERVER_IP=0.0.0.0
+    echo "你设置的 KubeOperator 服务 IP 为  $KO_SERVER_IP"
+  fi
+  else
+    KO_SERVER_IP=0.0.0.0
+    echo "(设置超时，使用默认服务 IP: 0.0.0.0)"
+  fi
+
+  # 替换 KubeOperator 服务 IP
+  sed -i -e "s#KO_SERVER_IP=.*#KO_SERVER_IP=$KO_SERVER_IP#g" ./kubeoperator/kubeoperator.conf
 }
 
 # 解压离线文件
@@ -240,6 +257,7 @@ function ko_start() {
 
 function main() {
   set_dir
+  set_ko_server_ip
   unarchive
   install_docker
   ko_config
