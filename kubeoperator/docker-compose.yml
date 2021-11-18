@@ -111,3 +111,18 @@ services:
       interval: 10s
       timeout: 10s
       retries: 20
+
+  kubepi:
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kubepi-server:${KP_TAG}-${OS_ARCH}
+    container_name: kubeoperator_kubepi
+    restart: always
+    privileged: true
+    ports:
+      - ${KP_PORT}:80
+    volumes:
+      - ./data/kubepi:/var/lib/kubepi
+    healthcheck:
+      test: ["CMD","curl","localhost"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
