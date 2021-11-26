@@ -28,6 +28,10 @@ kotf:
 webkubectl:
   host: webkubectl
   port: 8080
+kubepi:
+  host: kubepi
+  port: 80
+  username: admin
 cron:
   enable: true
 encrypt:
