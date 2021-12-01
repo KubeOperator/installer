@@ -32,6 +32,7 @@ kubepi:
   host: kubepi
   port: 80
   username: admin
+  password: kubepi
 cron:
   enable: true
 encrypt:
