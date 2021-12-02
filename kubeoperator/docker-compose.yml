@@ -117,8 +117,6 @@ services:
     container_name: kubeoperator_kubepi
     restart: always
     privileged: true
-    ports:
-      - ${KP_PORT}:80
     volumes:
       - ./data/kubepi:/var/lib/kubepi
     healthcheck:
