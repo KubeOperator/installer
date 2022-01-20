@@ -71,8 +71,17 @@ function offline_upgrade() {
      colorMsg $green "... 解压离线包" | tee -a ${CWD}/upgrade.log
      sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" ${CWD}/koctl
      \cp -rf ${CWD}/koctl /usr/local/bin | tee -a ${CWD}/upgrade.log
-     rm -rf  $KO_BASE/kubeoperator/data/nexus-data
-     dd if=${CWD}/data-nexus |openssl des3 -d -k nexus-data|tar zxf - -C $KO_BASE/kubeoperator/data/
+     if ! which unzip;then
+       tar xf ${CURRENT_DIR}/zip.tar
+       rpm -ivh ${CURRENT_DIR}/zip/*.rpm
+     fi
+     rm -rf $KO_BASE/kubeoperator/data/nexus-data
+     tar zxvf ${CWD}/kubeoperator/data/data-nexus3 -C $KO_BASE/kubeoperator/data/
+     unzip -P data-nexus -q $KO_BASE/kubeoperator/data/data-nexus -d $KO_BASE/kubeoperator/data/
+     rm -rf $KO_BASE/kubeoperator/data/data-nexus
+     rm -rf $KO_BASE/kubeoperator/data/nexus-data/docker-compose
+     rm -rf $KO_BASE/kubeoperator/data/nexus-data/nexus3:3.30.1-*.tar
+     chown -R 200 $KO_BASE/kubeoperator/data/nexus-data/
      rm -rf $KO_BASE/kubeoperator/data/kobe/project/ko/*
      # 删除老版本遗留文件
      if [[ -d $KO_BASE/kubeoperator/conf/my.cnf ]]; then
@@ -105,7 +114,7 @@ function main() {
         echo "... 跳过备份" | tee -a ${CWD}/upgrade.log
       fi
     fi
-    if [[ -d ${CWD}/images ]] && [[ -f ${CWD}/data-nexus ]]; then
+    if [[ -d ${CWD}/images ]]; then
           echo "离线安装"
           offline_upgrade
     else

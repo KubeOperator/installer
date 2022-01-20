@@ -72,7 +72,7 @@ function set_dir() {
 }
 
 function set_ko_server_ip() {
-  if read -t 120 -p "设置 KubeOperator 服务 IP: " KO_SERVER_IP;then
+  if read -t 120 -p "设置 KubeOperator 服务 IP,默认 0.0.0.0: " KO_SERVER_IP;then
   if [ "$KO_SERVER_IP" != "" ];then
     echo "你设置的 KubeOperator 服务 IP 为 $KO_SERVER_IP"
   else
@@ -248,7 +248,7 @@ function ko_start() {
   done
   if [ $(docker ps -a|grep kubeoperator|wc -l) -gt 0 ] && [ $(docker ps -a|grep kubeoperator |egrep "Exit|unhealthy"|wc -l) -eq 0 ];then
     echo -e "======================= KubeOperator 安装完成 =======================\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
-    echo -e "请开放防火墙或安全组的80,8081-8083端口,通过以下方式访问:\n URL: \033[33m http://\$LOCAL_IP:80\033[0m \n 用户名: \033[${green}m admin \033[0m \n 初始密码: \033[${green}m kubeoperator@admin123 \033[0m" 2>&1 | tee -a ${CURRENT_DIR}/install.log
+    echo -e "请开放防火墙或安全组的80,8081-8083端口,通过以下方式访问:\n URL: \033[33m http://\$LOCAL_IP:80\033[0m \n 用户名: \033[${green}m admin \033[0m" 2>&1 | tee -a ${CURRENT_DIR}/install.log
   else
     colorMsg $red "KubeOperator 服务异常，请检查服务是否启动" | tee -a ${CURRENT_DIR}/install.log
     cd  $KO_BASE/kubeoperator/ && docker-compose ps
