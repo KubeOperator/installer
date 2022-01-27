@@ -20,8 +20,7 @@ services:
       - ./data/ko:/var/ko/data
     restart: always
     depends_on:
-      mysql:
-        condition: service_healthy
+      - mysql
 
   kobe:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kobe:${KO_TAG}-${OS_ARCH}
@@ -58,11 +57,6 @@ services:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/mariadb:10.5.8-alpine-${OS_ARCH}
     container_name: kubeoperator_mysql
     restart: always
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 10s
-      retries: 20
     volumes:
       - ./conf/my.cnf:/etc/my.cnf
       - ./data/mysql:/var/lib/mysql
