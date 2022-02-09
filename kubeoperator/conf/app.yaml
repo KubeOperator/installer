@@ -12,8 +12,7 @@ db:
   max_open_conns: 200
   max_idle_conns: 10
 jwt:
-  secret: iXDgDaEYBzIzustW
-  exp: 480
+  exp: 600
 job:
   timeout: 60
 kobe:
@@ -27,6 +26,9 @@ webkubectl:
   port: 8080
 cron:
   enable: true
+repository:
+  nexus_password: cKABAQEBAQFcl1zet5k9vjPSdnGY39h9B4HMz3xSECs=
+  htpasswd: meoBAQEBAQFahnahNyKhAgA4oRsVM2dLGNdS+qk7BsTudEzk8iLNgHI7wPBK9UDV8evU9UlYl81I3uUKKx2Y+SvQ2y3HjsAMcJ1TUrnxkb+DmKKdMZCNVcmdVMXcvgJ+
 encrypt:
   multilevel:
     enable: true
