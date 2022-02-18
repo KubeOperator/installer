@@ -27,8 +27,8 @@ webkubectl:
 cron:
   enable: true
 repository:
-  nexus_password: cKABAQEBAQFcl1zet5k9vjPSdnGY39h9B4HMz3xSECs=
-  htpasswd: meoBAQEBAQFahnahNyKhAgA4oRsVM2dLGNdS+qk7BsTudEzk8iLNgHI7wPBK9UDV8evU9UlYl81I3uUKKx2Y+SvQ2y3HjsAMcJ1TUrnxkb+DmKKdMZCNVcmdVMXcvgJ+
+  nexus_password: CJAmpO0Y6XLU1UV6Q1tyJg==
+  htpasswd: 80sAUaBpyNXmZV7u4sjMce8AbiZeHdZaQv1rLuDUTFmkSEgkKvIRGT4eD8TRGcjKxoD+BERjxNaDYRjdsDTe8FvHGQ4L1oUcL1kfevIPMxA=
 encrypt:
   multilevel:
     enable: true
