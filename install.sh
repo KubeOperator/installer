@@ -107,6 +107,7 @@ function unarchive() {
       chmod +x $KO_BASE/kubeoperator/data/nexus-data/docker-compose
       mv $KO_BASE/kubeoperator/data/nexus-data/docker-compose ${CURRENT_DIR}/docker/bin
       chown -R 200 $KO_BASE/kubeoperator/data/nexus-data/
+      chmod 750 $KO_BASE/kubeoperator/data/nexus-data/
       log "... 解压 mysql 初始化文件"
       tar zxf ${CURRENT_DIR}/mysql.tar.gz -C $KO_BASE/kubeoperator/data/ > /dev/null 2>&1
   else

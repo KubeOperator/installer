@@ -6,7 +6,7 @@ read -p "Enter your domain [www.example.com]: " DOMAIN
 
 echo "Create server key..."
 
-openssl genrsa -des3 -out $DOMAIN.key 1024
+openssl genrsa -des3 -out $DOMAIN.key 2048
 
 echo "Create server certificate signing request..."
 
