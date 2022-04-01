@@ -88,6 +88,13 @@ function set_ko_server_ip() {
   sed -i -e "s#KO_SERVER_IP=.*#KO_SERVER_IP=$KO_SERVER_IP#g" ./kubeoperator/kubeoperator.conf
 }
 
+function init_user() {
+  useradd -u 2004 kops && usermod -aG kops kops || ls
+  useradd -u 200 nexus && usermod -aG nexus nexus || ls
+  groupadd -g 101 mysql || ls
+  useradd -u 100 -g mysql mysql || ls
+}
+
 # 解压离线文件
 function unarchive() {
   if [ -d ${CURRENT_DIR}/docker ];then
@@ -259,6 +266,7 @@ function ko_start() {
 function main() {
   set_dir
   set_ko_server_ip
+  init_user
   unarchive
   install_docker
   ko_config

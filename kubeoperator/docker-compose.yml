@@ -10,9 +10,9 @@ services:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/server:${KO_TAG}-${OS_ARCH}
     container_name: kubeoperator_server
     volumes:
-      - ./conf/app.yaml:/etc/ko/app.yaml
-      - ./data/backup:/var/ko/data/backup
-      - ./data/ko:/var/ko/data
+      - ./conf/app.yaml:/home/kops/config/app.yaml
+      - ./data/backup:/home/kops/data/backup
+      - ./data/ko:/home/kops/data
     restart: always
     depends_on:
       - mysql
