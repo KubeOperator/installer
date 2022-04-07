@@ -147,6 +147,18 @@ function ko_config() {
   sed -i -e "1,9s#KO_BASE=.*#KO_BASE=${KO_BASE}#g" $KO_BASE/kubeoperator/scripts/const.sh
 }
 
+# 生成 nginx 证书
+function gencert() {
+  cd $KO_BASE/kubeoperator/cert
+  openssl genrsa -out ca-key.key 3072
+  openssl req -subj "/CN=KubeOperator/C=CN/ST=Hangzhou/L=Zhejiang/O=Fit2cloud" -x509 -new -nodes -key ca-key.key -sha256 -days 3650 -out ca-req.crt
+  openssl genrsa -out server.key 3072
+  openssl rsa -aes256 -passout pass:a3ViZW9wZXJhdG9yCg== -in server.key -out server.key
+  openssl req -subj "/CN=KubeOperator/C=CN/ST=Hangzhou/L=Zhejiang/O=Fit2cloud" -sha256 -new -passin pass:a3ViZW9wZXJhdG9yCg== -key server.key -out server-req.csr
+  openssl x509 -req -extfile /etc/pki/tls/openssl.cnf -extensions v3_req -in server-req.csr -out server.crt -CA ca-req.crt -CAkey ca-key.key -CAcreateserial -days 3650
+  rm -rf ca-key.key ca-req.crt ca-req.srl server-req.csr
+}
+
 # 配置docker，私有 docker 仓库授信
 function config_docker() {
   if [ $(getenforce) == "Enforcing" ];then
@@ -270,6 +282,7 @@ function main() {
   unarchive
   install_docker
   ko_config
+  gencert
   load_image
   ko_start
 }
