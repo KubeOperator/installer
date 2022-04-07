@@ -88,11 +88,34 @@ function set_ko_server_ip() {
   sed -i -e "s#KO_SERVER_IP=.*#KO_SERVER_IP=$KO_SERVER_IP#g" ./kubeoperator/kubeoperator.conf
 }
 
+# 初始化用户、组
 function init_user() {
-  useradd -u 2004 kops && usermod -aG kops kops || ls
-  useradd -u 200 nexus && usermod -aG nexus nexus || ls
-  groupadd -g 101 mysql || ls
-  useradd -u 100 -g mysql mysql || ls
+  # 创建 kops 用户、组
+  if id -u kops >/dev/null 2>&1 ; then
+    echo "User kops exists."
+  else
+    useradd -u 2004 kops >/dev/null 2>&1 && usermod -aG kops kops >/dev/null 2>&1
+  fi
+
+  # 创建 nexus 用户、组
+  if id -u nexus >/dev/null 2>&1 ; then
+    echo "User nexus exists."
+  else
+    useradd -u 200 nexus >/dev/null 2>&1 && usermod -aG nexus nexus >/dev/null 2>&1
+  fi
+
+  # 创建 mysql 组
+  if id -g mysql >/dev/null 2>&1 ; then
+    echo "Group mysql exists."
+  else
+    groupadd -g 101 mysql >/dev/null 2>&1
+  fi
+  # 创建 mysql 用户
+  if id -u mysql >/dev/null 2>&1 ; then
+    echo "User mysql exists."
+  else
+    useradd -u 100 -g mysql mysql >/dev/null 2>&1
+  fi
 }
 
 # 解压离线文件
@@ -150,12 +173,12 @@ function ko_config() {
 # 生成 nginx 证书
 function gencert() {
   cd $KO_BASE/kubeoperator/cert
-  openssl genrsa -out ca-key.key 3072
+  openssl genrsa -out ca-key.key 3072 > /dev/null 2>&1
   openssl req -subj "/CN=KubeOperator/C=CN/ST=Hangzhou/L=Zhejiang/O=Fit2cloud" -x509 -new -nodes -key ca-key.key -sha256 -days 3650 -out ca-req.crt
-  openssl genrsa -out server.key 3072
-  openssl rsa -aes256 -passout pass:a3ViZW9wZXJhdG9yCg== -in server.key -out server.key
+  openssl genrsa -out server.key 3072 > /dev/null 2>&1
+  openssl rsa -aes256 -passout pass:a3ViZW9wZXJhdG9yCg== -in server.key -out server.key > /dev/null 2>&1
   openssl req -subj "/CN=KubeOperator/C=CN/ST=Hangzhou/L=Zhejiang/O=Fit2cloud" -sha256 -new -passin pass:a3ViZW9wZXJhdG9yCg== -key server.key -out server-req.csr
-  openssl x509 -req -extfile /etc/pki/tls/openssl.cnf -extensions v3_req -in server-req.csr -out server.crt -CA ca-req.crt -CAkey ca-key.key -CAcreateserial -days 3650
+  openssl x509 -req -extfile /etc/pki/tls/openssl.cnf -extensions v3_req -in server-req.csr -out server.crt -CA ca-req.crt -CAkey ca-key.key -CAcreateserial -days 3650 > /dev/null 2>&1
   rm -rf ca-key.key ca-req.crt ca-req.srl server-req.csr
 }
 
