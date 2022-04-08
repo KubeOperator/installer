@@ -90,32 +90,15 @@ function set_ko_server_ip() {
 
 # 初始化用户、组
 function init_user() {
-  # 创建 kops 用户、组
-  if id -u kops >/dev/null 2>&1 ; then
-    echo "User kops exists."
-  else
-    useradd -u 2004 kops >/dev/null 2>&1 && usermod -aG kops kops >/dev/null 2>&1
-  fi
-
-  # 创建 nexus 用户、组
-  if id -u nexus >/dev/null 2>&1 ; then
-    echo "User nexus exists."
-  else
-    useradd -u 200 nexus >/dev/null 2>&1 && usermod -aG nexus nexus >/dev/null 2>&1
-  fi
-
-  # 创建 mysql 组
-  if id -g mysql >/dev/null 2>&1 ; then
-    echo "Group mysql exists."
-  else
-    groupadd -g 101 mysql >/dev/null 2>&1
-  fi
+  # 创建 kops 用户
+  groupadd -g 2004 ko-kops >/dev/null 2>&1
+  useradd -u 2004 -g 2004 ko-kops >/dev/null 2>&1
+  # 创建 nexus 用户
+  groupadd -g 200 ko-nexus >/dev/null 2>&1
+  useradd -u 200 -g 200 ko-nexus >/dev/null 2>&1
   # 创建 mysql 用户
-  if id -u mysql >/dev/null 2>&1 ; then
-    echo "User mysql exists."
-  else
-    useradd -u 100 -g mysql mysql >/dev/null 2>&1
-  fi
+  groupadd -g 101 ko-mysql >/dev/null 2>&1
+  useradd -u 100 -g 101 ko-mysql >/dev/null 2>&1
 }
 
 # 解压离线文件
@@ -180,6 +163,7 @@ function gencert() {
   openssl req -subj "/CN=KubeOperator/C=CN/ST=Hangzhou/L=Zhejiang/O=Fit2cloud" -sha256 -new -passin pass:a3ViZW9wZXJhdG9yCg== -key server.key -out server-req.csr
   openssl x509 -req -extfile /etc/pki/tls/openssl.cnf -extensions v3_req -in server-req.csr -out server.crt -CA ca-req.crt -CAkey ca-key.key -CAcreateserial -days 3650 > /dev/null 2>&1
   rm -rf ca-key.key ca-req.crt ca-req.srl server-req.csr
+  chmod 640 server.key server.crt
 }
 
 # 配置docker，私有 docker 仓库授信
