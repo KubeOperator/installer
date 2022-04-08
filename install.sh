@@ -90,15 +90,27 @@ function set_ko_server_ip() {
 
 # 初始化用户、组
 function init_user() {
-  # 创建 kops 用户
-  groupadd -g 2004 ko-kops >/dev/null 2>&1
-  useradd -u 2004 -g 2004 ko-kops >/dev/null 2>&1
-  # 创建 nexus 用户
-  groupadd -g 200 ko-nexus >/dev/null 2>&1
-  useradd -u 200 -g 200 ko-nexus >/dev/null 2>&1
-  # 创建 mysql 用户
-  groupadd -g 101 ko-mysql >/dev/null 2>&1
-  useradd -u 100 -g 101 ko-mysql >/dev/null 2>&1
+  # 创建 ko-kops 用户、组
+  if id -u ko-kops >/dev/null 2>&1 ; then
+    echo "User ko-kops exists."
+  else
+    groupadd -g 2004 ko-kops | tee -a ${CURRENT_DIR}/install.log
+    useradd -u 2004 -g 2004 ko-kops | tee -a ${CURRENT_DIR}/install.log
+  fi
+  # 创建 ko-nexus 用户、组
+  if id -u ko-nexus >/dev/null 2>&1 ; then
+    echo "User ko-nexus exists."
+  else
+    groupadd -g 200 ko-nexus | tee -a ${CURRENT_DIR}/install.log
+    useradd -u 200 -g 200 ko-nexus | tee -a ${CURRENT_DIR}/install.log
+  fi
+  # 创建 ko-mysql 用户、组
+  if id -g ko-mysql >/dev/null 2>&1 ; then
+    echo "Group ko-mysql exists."
+  else
+    groupadd -g 101 ko-mysql | tee -a ${CURRENT_DIR}/install.log
+    useradd -u 100 -g 101 ko-mysql | tee -a ${CURRENT_DIR}/install.log
+  fi
 }
 
 # 解压离线文件
@@ -156,12 +168,12 @@ function ko_config() {
 # 生成 nginx 证书
 function gencert() {
   cd $KO_BASE/kubeoperator/cert
-  openssl genrsa -out ca-key.key 3072 > /dev/null 2>&1
+  openssl genrsa -out ca-key.key 3072 >/dev/null 2>&1
   openssl req -subj "/CN=KubeOperator/C=CN/ST=Hangzhou/L=Zhejiang/O=Fit2cloud" -x509 -new -nodes -key ca-key.key -sha256 -days 3650 -out ca-req.crt
-  openssl genrsa -out server.key 3072 > /dev/null 2>&1
-  openssl rsa -aes256 -passout pass:a3ViZW9wZXJhdG9yCg== -in server.key -out server.key > /dev/null 2>&1
+  openssl genrsa -out server.key 3072 >/dev/null 2>&1
+  openssl rsa -aes256 -passout pass:a3ViZW9wZXJhdG9yCg== -in server.key -out server.key >/dev/null 2>&1
   openssl req -subj "/CN=KubeOperator/C=CN/ST=Hangzhou/L=Zhejiang/O=Fit2cloud" -sha256 -new -passin pass:a3ViZW9wZXJhdG9yCg== -key server.key -out server-req.csr
-  openssl x509 -req -extfile /etc/pki/tls/openssl.cnf -extensions v3_req -in server-req.csr -out server.crt -CA ca-req.crt -CAkey ca-key.key -CAcreateserial -days 3650 > /dev/null 2>&1
+  openssl x509 -req -extfile /etc/pki/tls/openssl.cnf -extensions v3_req -in server-req.csr -out server.crt -CA ca-req.crt -CAkey ca-key.key -CAcreateserial -days 3650 >/dev/null 2>&1
   rm -rf ca-key.key ca-req.crt ca-req.srl server-req.csr
   chmod 640 server.key server.crt
 }
