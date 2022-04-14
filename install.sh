@@ -105,11 +105,17 @@ function init_user() {
     useradd -u 200 -g 200 ko-nexus | tee -a ${CURRENT_DIR}/install.log
   fi
   # 创建 ko-mysql 用户、组
-  if id -g ko-mysql >/dev/null 2>&1 ; then
-    echo "Group ko-mysql exists."
+  if id -u ko-mysql >/dev/null 2>&1 ; then
+    echo "User ko-mysql exists."
   else
     groupadd -g 101 ko-mysql | tee -a ${CURRENT_DIR}/install.log
     useradd -u 100 -g 101 ko-mysql | tee -a ${CURRENT_DIR}/install.log
+  fi
+  # 创建 ko-nginx 用户、组
+  if id -u ko-nginx >/dev/null 2>&1 ; then
+    echo "User ko-nginx exists."
+  else
+    useradd -u 101 -g root ko-nginx | tee -a ${CURRENT_DIR}/install.log
   fi
 }
 
@@ -175,6 +181,7 @@ function gencert() {
   openssl req -subj "/CN=KubeOperator/C=CN/ST=Hangzhou/L=Zhejiang/O=Fit2cloud" -sha256 -new -passin pass:a3ViZW9wZXJhdG9yCg== -key server.key -out server-req.csr
   openssl x509 -req -extfile /etc/pki/tls/openssl.cnf -extensions v3_req -in server-req.csr -out server.crt -CA ca-req.crt -CAkey ca-key.key -CAcreateserial -days 3650 >/dev/null 2>&1
   rm -rf ca-key.key ca-req.crt ca-req.srl server-req.csr
+  chown -R 101:root server.key server.crt
   chmod 640 server.key server.crt
 }
 

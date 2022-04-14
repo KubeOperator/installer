@@ -31,7 +31,7 @@ services:
     container_name: kubeoperator_nginx
     restart: always
     ports:
-      - ${KO_SERVER_IP}:${KO_PORT}:443
+      - ${KO_SERVER_IP}:${KO_PORT}:8443
       - ${KO_SERVER_IP}:8081:8081
       - ${KO_SERVER_IP}:8082:8082
       - ${KO_SERVER_IP}:8083:8083
