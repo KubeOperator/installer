@@ -182,7 +182,7 @@ function gencert() {
   openssl x509 -req -extfile /etc/pki/tls/openssl.cnf -extensions v3_req -in server-req.csr -out server.crt -CA ca-req.crt -CAkey ca-key.key -CAcreateserial -days 3650 >/dev/null 2>&1
   rm -rf ca-key.key ca-req.crt ca-req.srl server-req.csr
   chown -R 101:root server.key server.crt
-  chmod 640 server.key server.crt
+  chmod 600 server.key server.crt
 }
 
 # 配置docker，私有 docker 仓库授信
