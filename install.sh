@@ -127,8 +127,8 @@ function unarchive() {
       \cp -rfp ${CURRENT_DIR}/kubeoperator $KO_BASE
       \cp -rfp ${CURRENT_DIR}/koctl $KO_BASE/kubeoperator
       if ! which unzip;then
-        tar xf ${CURRENT_DIR}/zip.tar
-        rpm -ivh ${CURRENT_DIR}/zip/*.rpm
+        tar xf ${CURRENT_DIR}/zip.tar > /dev/null 2>&1
+        rpm -ivh ${CURRENT_DIR}/zip/*.rpm > /dev/null 2>&1
       fi
       tar zxvf $KO_BASE/kubeoperator/data/data-nexus3 -C $KO_BASE/kubeoperator/data/
       rm -rf $KO_BASE/kubeoperator/data/data-nexus3
@@ -271,6 +271,7 @@ function load_image() {
      for i in $(ls images); do
         docker load -i images/$i 2>&1 | tee -a ${CURRENT_DIR}/install.log
      done
+     rm -rf nexus3:3.30.1-*.tar
   else
      log "... 拉取镜像"
      cd $KO_BASE/kubeoperator/ && docker-compose pull 2>&1 | tee -a ${CURRENT_DIR}/install.log
