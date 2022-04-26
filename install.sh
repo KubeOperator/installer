@@ -271,7 +271,7 @@ function load_image() {
      for i in $(ls images); do
         docker load -i images/$i 2>&1 | tee -a ${CURRENT_DIR}/install.log
      done
-     rm -rf nexus3:3.30.1-*.tar
+     rm -rf images/nexus3:3.30.1-*.tar
   else
      log "... 拉取镜像"
      cd $KO_BASE/kubeoperator/ && docker-compose pull 2>&1 | tee -a ${CURRENT_DIR}/install.log
