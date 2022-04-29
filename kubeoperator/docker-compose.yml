@@ -27,7 +27,7 @@ services:
     container_name: kubeoperator_kobe
 
   nginx:
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/nginx:1.19.9-alpine-${OS_ARCH}
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/nginx:1.20.2-alpine-${OS_ARCH}
     container_name: kubeoperator_nginx
     restart: always
     ports:
@@ -44,7 +44,7 @@ services:
       - server
 
   mysql:
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/mariadb:10.5.8-alpine-${OS_ARCH}
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/mariadb:10.6.7-alpine-${OS_ARCH}
     container_name: kubeoperator_mysql
     restart: always
     volumes:
@@ -53,7 +53,7 @@ services:
 
   nexus:
     restart: always
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/nexus3:3.30.1-${OS_ARCH}
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/nexus3:3.38.1-01-${OS_ARCH}
     container_name: kubeoperator_nexus
     volumes:
       - ./data/nexus-data/:/nexus-data
