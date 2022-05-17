@@ -150,42 +150,59 @@ EOF
 
 # 检测 docker 是否存在
 function install_docker() {
-  if which docker docker-compose ;then
-    log "... docker 已经安装，跳过安装步骤"
-    config_docker
-    if systemctl status docker|grep running;then
-      log "... docker 运行正常"
-    else
-      log "... docker 已经安装，跳过安装步骤"
-    fi
+  if which docker >/dev/null; then
+    log "检测到 Docker 已安装，跳过安装步骤"
+    log "启动 Docker "
+    systemctl start docker 2>&1 | tee -a ${CURRENT_DIR}/install.log
   else
-   if [[ -d docker ]]; then
+    if [[ -d docker ]]; then
       log "... 离线安装 docker"
-      cp docker/bin/* /usr/bin/
-      cp docker/service/docker.service /etc/systemd/system/
-      sudo chmod +x /usr/bin/docker*
-      sudo chmod 754 /etc/systemd/system/docker.service
+      \cp docker/bin/* /usr/bin/
+      \cp docker/service/docker.service /etc/systemd/system/
+      chmod +x /usr/bin/docker*
+      chmod 754 /etc/systemd/system/docker.service
       log "... 配置 docker"
       config_docker
       log "... 启动 docker"
       systemctl start docker 2>&1 | tee -a ${CURRENT_DIR}/install.log
       systemctl enable docker 2>&1 | tee -a ${CURRENT_DIR}/install.log
-   else
+    else
       log "... 在线安装 docker"
-      wget --no-check-certificate  $docker_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}| tee -a ${CURRENT_DIR}/install.log
-      tar zxf ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/docker-$docker_version.tgz -C ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/ | tee -a ${CURRENT_DIR}/install.log
-      \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/docker/* /usr/bin/ | tee -a ${CURRENT_DIR}/install.log
-      \cp -rfp $KO_BASE/kubeoperator/conf/docker.service /etc/systemd/system/ | tee -a ${CURRENT_DIR}/install.log
-      log "... 在线安装 docker-compose"
-      wget --no-check-certificate  $docker_compose_download_url -P ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}| tee -a ${CURRENT_DIR}/install.log
-      \cp -rfp ${CURRENT_DIR}/kubeoperator-release-${KO_VERSION}/docker-compose /usr/bin/ | tee -a ${CURRENT_DIR}/install.log
-      sudo chmod +x /usr/bin/docker-compose
+      curl -fsSL https://get.docker.com -o get-docker.sh 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      sudo sh get-docker.sh --mirror Aliyun 2>&1 | tee -a ${CURRENT_DIR}/install.log
       log "... 配置 docker"
       config_docker
       log "... 启动 docker"
-      service docker start 2>&1 | tee -a ${CURRENT_DIR}/install.log
-      systemctl enable docker 2>&1 | tee -a ${CURRENT_DIR}/install.log
-   fi
+      systemctl start docker 2>&1 | tee -a ${CURRENT_DIR}/install.log
+    fi
+  fi
+  # 检查docker服务是否正常运行
+  docker ps 1>/dev/null 2>/dev/null
+  if [ $? != 0 ];then
+    log "Docker 未正常启动，请先安装并启动 Docker 服务后再次执行本脚本"
+    exit
+  fi
+
+  ##Install Latest Stable Docker Compose Release
+  if which docker-compose >/dev/null; then
+    log "检测到 Docker Compose 已安装，跳过安装步骤"
+  else
+    if [[ -d docker ]]; then
+      log "... 离线安装 docker-compose"
+      \cp docker/bin/docker-compose /usr/bin/
+      sudo chmod +x /usr/bin/docker-compose
+    else
+      log "... 在线安装 docker-compose"
+      curl -L https://get.daocloud.io/docker/compose/releases/download/v2.2.3/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      chmod +x /usr/local/bin/docker-compose
+      ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+    fi
+  fi
+  # 检查docker-compose是否正常
+  docker-compose version 1>/dev/null 2>/dev/null
+  if [ $? != 0 ];then
+    log "docker-compose 未正常安装，请先安装 docker-compose 后再次执行本脚本"
+    exit
   fi
 }
 
