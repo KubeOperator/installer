@@ -98,7 +98,7 @@ services:
 
   nexus:
     restart: always
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/nexus3:3.25.0-${OS_ARCH}
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/nexus3:3.38.1-${OS_ARCH}
     container_name: kubeoperator_nexus
     ports:
       - ${KO_REPO_PORT}:8081
