@@ -3,8 +3,7 @@
 
 #  定义离线文件下载地址
 export CURRENT_DIR=$(cd "$(dirname "$0")";pwd)
-export KO_VERSION=$(curl -s https://github.com/KubeOperator/KubeOperator/releases/latest/download 2>&1 |grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
-export ANSIBLE_VERSION=$(curl -s https://github.com/KubeOperator/ansible/releases/latest/download 2>&1 |grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
+export KO_VERSION=$(curl -s https://api.github.com/repos/KubeOperator/KubeOperator/releases/latest | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g')
 
 nexus_download_url="https://kubeoperator.fit2cloud.com/nexus/nexus-${KO_VERSION}.tar.gz"
 ansible_download_url="https://github.com/KubeOperator/KubeOperator/releases/latest/download/ansible-${KO_VERSION}.tar.gz"
