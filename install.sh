@@ -193,7 +193,7 @@ function install_docker() {
       sudo chmod +x /usr/bin/docker-compose
     else
       log "... 在线安装 docker-compose"
-      curl -L https://get.daocloud.io/docker/compose/releases/download/v2.2.3/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      wget --no-check-certificate $docker_compose_download_url -P /usr/local/bin/ 2>&1 | tee -a ${CURRENT_DIR}/install.log
       chmod +x /usr/local/bin/docker-compose
       ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
     fi
