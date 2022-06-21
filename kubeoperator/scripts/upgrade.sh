@@ -5,7 +5,7 @@ source "${PROJECT_DIR}/const.sh"
 target=$1
 
 function online_upgrade() {
-    export LATEST_KO_VERSION=$(curl -s https://github.com/KubeOperator/KubeOperator/releases/latest/download 2>&1 |grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}")
+    export LATEST_KO_VERSION=$(curl -s https://api.github.com/repos/KubeOperator/KubeOperator/releases/latest | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g')
     if [ ! -z `echo ${target}|grep -Eo "v([0-9]{1,}\.)+[0-9]{1,}"` ];then
      LATEST_KO_VERSION=${target}
     fi
