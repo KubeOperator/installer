@@ -75,6 +75,8 @@ services:
   mysql:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/mysql-server:8.0.21-${OS_ARCH}
     container_name: kubeoperator_mysql
+    env_file:
+      - ./conf/mysql.env
     restart: always
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
@@ -83,6 +85,7 @@ services:
       retries: 20
     volumes:
       - ./conf/my.cnf:/etc/my.cnf
+      - ./conf/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./data/mysql:/var/lib/mysql
 
   webkubectl:
