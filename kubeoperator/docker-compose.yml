@@ -55,7 +55,7 @@ services:
       retries: 20
 
   nginx:
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/nginx:1.19.2-${OS_ARCH}
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/nginx:1.23.1-${OS_ARCH}
     container_name: kubeoperator_nginx
     restart: always
     ports:
@@ -73,7 +73,7 @@ services:
       - server
 
   mysql:
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/mysql-server:8.0.21-${OS_ARCH}
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/mysql-server:8.0.29-${OS_ARCH}
     container_name: kubeoperator_mysql
     env_file:
       - ./conf/mysql.env
@@ -89,7 +89,7 @@ services:
       - ./data/mysql:/var/lib/mysql
 
   webkubectl:
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/webkubectl:v2.6.0-${OS_ARCH}
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/webkubectl:v2.10.6-${OS_ARCH}
     container_name: kubeoperator_webkubectl
     restart: always
     privileged: true
@@ -101,7 +101,7 @@ services:
 
   nexus:
     restart: always
-    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/nexus3:3.38.1-${OS_ARCH}
+    image: registry.cn-qingdao.aliyuncs.com/kubeoperator/nexus3:3.40.1-${OS_ARCH}
     container_name: kubeoperator_nexus
     ports:
       - ${KO_REPO_PORT}:8081
