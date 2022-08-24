@@ -5,6 +5,8 @@ services:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/neeko:${KO_TAG}-${OS_ARCH}
     container_name: kubeoperator_ui
     restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime
     healthcheck:
       test: ["CMD", "test", "-f", "/var/run/nginx.pid"]
       interval: 10s
@@ -14,11 +16,12 @@ services:
   server:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/server:${KO_TAG}-${OS_ARCH}
     container_name: kubeoperator_server
+    restart: always
     volumes:
+      - /etc/localtime:/etc/localtime
       - ./conf/app.yaml:/etc/ko/app.yaml
       - ./data/backup:/var/ko/data/backup
       - ./data/ko:/var/ko/data
-    restart: always
     healthcheck:
       test: ["CMD","curl","-f","http://localhost:8080/api/v1/health"]
       interval: 10s
@@ -30,12 +33,13 @@ services:
 
   kobe:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/kobe:${KO_TAG}-${OS_ARCH}
+    container_name: kubeoperator_kobe
+    restart: always
     volumes:
+      - /etc/localtime:/etc/localtime
       - ./conf/kobe.yml:/etc/kobe/app.yml
       - ./data/kobe:/var/kobe/data
       - ./data/backup:/var/ko/data/backup
-    restart: always
-    container_name: kubeoperator_kobe
     healthcheck:
       test: ["CMD","kobe-inventory"]
       interval: 10s
@@ -47,6 +51,7 @@ services:
     container_name: kubeoperator_kotf
     restart: always
     volumes:
+      - /etc/localtime:/etc/localtime
       - ./data/kotf:/var/kotf/data
     healthcheck:
       test: ["CMD","ps", "-ef", "|", "grep","kotf-server"]
@@ -61,6 +66,7 @@ services:
     ports:
       - ${KO_PORT}:80
     volumes:
+      - /etc/localtime:/etc/localtime
       - ./conf/nginx.conf:/etc/nginx/conf.d/default.conf
       - ./conf/wait.sh:/etc/nginx/conf.d/wait.sh
     command: ["/bin/bash","/etc/nginx/conf.d/wait.sh","-t","10","server:8080","--","nginx","-g","daemon off;"]
@@ -78,21 +84,24 @@ services:
     env_file:
       - ./conf/mysql.env
     restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - ./conf/my.cnf:/etc/my.cnf
+      - ./conf/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./data/mysql:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       interval: 10s
       timeout: 10s
       retries: 20
-    volumes:
-      - ./conf/my.cnf:/etc/my.cnf
-      - ./conf/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./data/mysql:/var/lib/mysql
 
   webkubectl:
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/webkubectl:v2.10.6-${OS_ARCH}
     container_name: kubeoperator_webkubectl
     restart: always
     privileged: true
+    volumes:
+      - /etc/localtime:/etc/localtime
     healthcheck:
       test: ["CMD","curl","localhost:8080"]
       interval: 10s
@@ -100,14 +109,15 @@ services:
       retries: 20
 
   nexus:
-    restart: always
     image: registry.cn-qingdao.aliyuncs.com/kubeoperator/nexus3:3.38.1-02-${OS_ARCH}
     container_name: kubeoperator_nexus
+    restart: always
     ports:
       - ${KO_REPO_PORT}:8081
       - ${KO_REGISTRY_PORT}:8082
       - ${KO_REGISTRY_HOSTED_PORT}:8083
     volumes:
+      - /etc/localtime:/etc/localtime
       - ./data/nexus-data/:/nexus-data
     healthcheck:
       test: ["CMD","curl","localhost:8081"]
